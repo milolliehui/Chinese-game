@@ -161,6 +161,7 @@ body {
   display: inline-block;
   min-width: 48px;
   text-align: center;
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
 .options-grid {
@@ -178,7 +179,7 @@ body {
   box-shadow: var(--theme-btn-shadow, none);
   cursor: pointer;
   border-radius: var(--theme-radius-sm, 0px);
-  transition: transform 0.08s ease;
+  transition: transform 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
 }
 
 .option-btn:active {
@@ -195,6 +196,17 @@ body {
   background: #ef9a9a !important;
   color: #b71c1c !important;
   opacity: 0.6;
+}
+
+/* Karaoke Highlighting on Option Buttons & Target Blank */
+.option-btn.story-highlight,
+.target-blank.story-highlight {
+  background: #ffeb3b !important;
+  color: #b71c1c !important;
+  font-weight: 900 !important;
+  border-color: #d35400 !important;
+  box-shadow: 0 0 14px rgba(241, 196, 15, 0.95) !important;
+  transform: scale(1.04);
 }
 
 /* Module 2: Handwriting Crafting Table */

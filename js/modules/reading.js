@@ -1,7 +1,7 @@
 /**
  * Module 3: 村莊冒險日記 (Reading Comprehension & Karaoke Highlighting)
  * Pluggable activity module.
- * Enhanced with question and options read-aloud buttons for comprehension QA.
+ * Enhanced with synchronized real-time karaoke highlighting for story, QA question, and options.
  */
 
 (function(window) {
@@ -12,7 +12,8 @@
       this.storyData = null;
       this.currentQIndex = 0;
       this.isReading = false;
-      this.fallbackTimer = null;
+      this.storyFallbackTimer = null;
+      this.qaFallbackTimer = null;
       this.attempts = 0;
       this.isProcessing = false;
       this.isReadingQA = false;
@@ -30,14 +31,23 @@
     }
 
     cleanup() {
-      if (this.fallbackTimer) {
-        clearInterval(this.fallbackTimer);
-        this.fallbackTimer = null;
+      if (this.storyFallbackTimer) {
+        clearInterval(this.storyFallbackTimer);
+        this.storyFallbackTimer = null;
+      }
+      if (this.qaFallbackTimer) {
+        clearInterval(this.qaFallbackTimer);
+        this.qaFallbackTimer = null;
       }
       this.isReading = false;
       this.isProcessing = false;
-      this.stopQAQuestionRead();
-      this.clearHighlights();
+      this.isReadingQA = false;
+      this.clearAllHighlights();
+    }
+
+    clearAllHighlights() {
+      const highlighted = document.querySelectorAll('.story-highlight');
+      highlighted.forEach(el => el.classList.remove('story-highlight'));
     }
 
     renderView() {
@@ -98,7 +108,7 @@
     startKaraokeRead(text, readBtn, stopBtn) {
       if (!('speechSynthesis' in window)) return;
       this.engine.cancelSpeech();
-      this.clearHighlights();
+      this.clearAllHighlights();
 
       this.isReading = true;
       if (readBtn) readBtn.style.display = 'none';
@@ -112,7 +122,7 @@
       let timerIdx = 0;
 
       const highlightChar = (idx) => {
-        this.clearHighlights();
+        this.clearAllHighlights();
         const el = document.getElementById(`story-char-${idx}`);
         if (el) {
           el.classList.add('story-highlight');
@@ -122,9 +132,9 @@
 
       utterance.onboundary = (e) => {
         boundaryFired = true;
-        if (this.fallbackTimer) {
-          clearInterval(this.fallbackTimer);
-          this.fallbackTimer = null;
+        if (this.storyFallbackTimer) {
+          clearInterval(this.storyFallbackTimer);
+          this.storyFallbackTimer = null;
         }
         if (e.charIndex !== undefined) {
           highlightChar(e.charIndex);
@@ -132,16 +142,16 @@
       };
 
       // iOS WebKit Fallback timer
-      this.fallbackTimer = setInterval(() => {
+      this.storyFallbackTimer = setInterval(() => {
         if (boundaryFired) {
-          clearInterval(this.fallbackTimer);
+          clearInterval(this.storyFallbackTimer);
           return;
         }
         if (timerIdx < text.length) {
           highlightChar(timerIdx);
           timerIdx++;
         } else {
-          clearInterval(this.fallbackTimer);
+          clearInterval(this.storyFallbackTimer);
         }
       }, 310);
 
@@ -157,20 +167,15 @@
 
     stopKaraokeRead(readBtn, stopBtn) {
       this.isReading = false;
-      if (this.fallbackTimer) {
-        clearInterval(this.fallbackTimer);
-        this.fallbackTimer = null;
+      if (this.storyFallbackTimer) {
+        clearInterval(this.storyFallbackTimer);
+        this.storyFallbackTimer = null;
       }
       this.engine.cancelSpeech();
-      this.clearHighlights();
+      this.clearAllHighlights();
 
       if (readBtn) readBtn.style.display = 'inline-block';
       if (stopBtn) stopBtn.style.display = 'none';
-    }
-
-    clearHighlights() {
-      const highlighted = document.querySelectorAll('.story-char-span.story-highlight');
-      highlighted.forEach(el => el.classList.remove('story-highlight'));
     }
 
     renderQAQuestion(questions) {
@@ -192,6 +197,12 @@
       this.isReadingQA = false;
       const q = questions[this.currentQIndex];
 
+      // Wrap question characters in spans for karaoke highlighting
+      let qHtml = '';
+      for (let i = 0; i < q.question.length; i++) {
+        qHtml += `<span id="qa-q-char-${i}" class="story-char-span">${q.question[i]}</span>`;
+      }
+
       // Shuffle options with answer rotation
       const options = [...q.options];
       for (let i = options.length - 1; i > 0; i--) {
@@ -203,7 +214,7 @@
         <div style="background:#f0f0f0; border:2px solid #000; padding:10px; border-radius:4px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
             <div style="font-weight:bold; font-size:1.15rem;">
-              ❓ 問題 ${this.currentQIndex + 1} / ${questions.length}: ${q.question}
+              ❓ 問題 ${this.currentQIndex + 1} / ${questions.length}: ${qHtml}
             </div>
             <div style="display:flex; gap:6px;">
               <button class="hud-btn" id="btn-read-qa-q" style="font-size:0.85rem; padding:4px 8px;">🔊 朗讀問題與選項</button>
@@ -211,8 +222,8 @@
             </div>
           </div>
           <div class="options-grid">
-            ${options.map(opt => `
-              <button class="option-btn qa-opt-btn" data-val="${opt}" style="font-size:1.15rem; min-height:50px;">
+            ${options.map((opt, oIdx) => `
+              <button class="option-btn qa-opt-btn" id="qa-opt-${oIdx}" data-val="${opt}" style="font-size:1.15rem; min-height:50px;">
                 ${opt}
               </button>
             `).join('')}
@@ -241,19 +252,102 @@
     }
 
     startQAQuestionRead(q, options, readBtn, stopBtn) {
+      if (!('speechSynthesis' in window)) return;
+      this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
       this.isReadingQA = true;
       if (readBtn) readBtn.style.display = 'none';
       if (stopBtn) stopBtn.style.display = 'inline-block';
 
-      const spokenText = `${q.question}。選項有：${options.join('；')}。`;
-      this.engine.speakText(spokenText, () => {
-        this.stopQAQuestionRead(readBtn, stopBtn);
+      // Build spoken text and character index map
+      let spokenText = '';
+      const spanMap = [];
+
+      for (let i = 0; i < q.question.length; i++) {
+        spokenText += q.question[i];
+        spanMap.push(`qa-q-char-${i}`);
+      }
+
+      spokenText += '。選項有：';
+      for (let i = 0; i < 5; i++) spanMap.push(null);
+
+      options.forEach((opt, oIdx) => {
+        if (oIdx > 0) {
+          spokenText += '；';
+          spanMap.push(null);
+        }
+        for (const ch of opt) {
+          spokenText += ch;
+          spanMap.push(`qa-opt-${oIdx}`);
+        }
       });
+      spokenText += '。';
+      spanMap.push(null);
+
+      const highlightElement = (targetId) => {
+        this.clearAllHighlights();
+        if (!targetId) return;
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.classList.add('story-highlight');
+          if (el.scrollIntoView) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }
+      };
+
+      const utterance = new SpeechSynthesisUtterance(spokenText);
+      utterance.lang = this.engine.speechLang;
+      utterance.rate = 0.85;
+
+      let boundaryFired = false;
+      let timerIdx = 0;
+
+      utterance.onboundary = (e) => {
+        boundaryFired = true;
+        if (this.qaFallbackTimer) {
+          clearInterval(this.qaFallbackTimer);
+          this.qaFallbackTimer = null;
+        }
+        if (e.charIndex !== undefined && spanMap[e.charIndex] !== undefined) {
+          highlightElement(spanMap[e.charIndex]);
+        }
+      };
+
+      // iOS WebKit Fallback timer
+      this.qaFallbackTimer = setInterval(() => {
+        if (boundaryFired) {
+          clearInterval(this.qaFallbackTimer);
+          return;
+        }
+        if (timerIdx < spanMap.length) {
+          highlightElement(spanMap[timerIdx]);
+          timerIdx++;
+        } else {
+          clearInterval(this.qaFallbackTimer);
+        }
+      }, 310);
+
+      const onFinish = () => {
+        this.stopQAQuestionRead(readBtn, stopBtn);
+      };
+
+      utterance.onend = onFinish;
+      utterance.onerror = onFinish;
+
+      window.speechSynthesis.speak(utterance);
     }
 
     stopQAQuestionRead(readBtn, stopBtn) {
       this.isReadingQA = false;
+      if (this.qaFallbackTimer) {
+        clearInterval(this.qaFallbackTimer);
+        this.qaFallbackTimer = null;
+      }
       this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
       const rBtn = readBtn || document.getElementById('btn-read-qa-q');
       const sBtn = stopBtn || document.getElementById('btn-stop-qa-q');
       if (rBtn) rBtn.style.display = 'inline-block';
@@ -268,6 +362,7 @@
 
       if (isCorrect) {
         this.isProcessing = true;
+        this.clearAllHighlights();
         // Disable all buttons immediately to prevent duplicate clicks
         const allBtns = this.container.querySelectorAll('.qa-opt-btn');
         allBtns.forEach(b => b.disabled = true);
@@ -301,6 +396,7 @@
 
         if (this.attempts >= 2) {
           this.isProcessing = true;
+          this.clearAllHighlights();
           const allBtns = this.container.querySelectorAll('.qa-opt-btn');
           allBtns.forEach(b => b.disabled = true);
 

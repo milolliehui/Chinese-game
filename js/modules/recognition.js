@@ -1,7 +1,7 @@
 /**
  * Module 1: 礦洞選字 (Word Recognition & Sentence Fill-in)
  * Pluggable activity module.
- * Enhanced with pre-selection question and options read-aloud button.
+ * Enhanced with synchronized real-time karaoke highlighting for prompt & options read-aloud.
  */
 
 (function(window) {
@@ -14,6 +14,8 @@
       this.attempts = 0;
       this.isProcessing = false;
       this.isReadingPrompt = false;
+      this.promptFallbackTimer = null;
+      this.confirmFallbackTimer = null;
     }
 
     render(container, levelData) {
@@ -26,7 +28,17 @@
 
     cleanup() {
       this.stopQuestionRead();
+      if (this.confirmFallbackTimer) {
+        clearInterval(this.confirmFallbackTimer);
+        this.confirmFallbackTimer = null;
+      }
+      this.clearAllHighlights();
       this.isProcessing = false;
+    }
+
+    clearAllHighlights() {
+      const els = document.querySelectorAll('.story-highlight');
+      els.forEach(el => el.classList.remove('story-highlight'));
     }
 
     renderQuestion() {
@@ -35,6 +47,7 @@
         return;
       }
 
+      this.cleanup();
       this.attempts = 0;
       this.isProcessing = false;
       this.isReadingPrompt = false;
@@ -47,11 +60,29 @@
         [options[i], options[j]] = [options[j], options[i]];
       }
 
-      // Sentence with target blank
-      const sentenceHtml = q.sentence.replace(
-        '［  ］', 
-        `<span id="target-blank" class="target-blank">？</span>`
-      );
+      // Sentence with target blank and wrapped character spans
+      let sentenceHtml = '';
+      let charIdx = 0;
+      const blankIndex = q.sentence.indexOf('［  ］');
+
+      if (blankIndex !== -1) {
+        const before = q.sentence.slice(0, blankIndex);
+        const after = q.sentence.slice(blankIndex + 4);
+        for (const ch of before) {
+          sentenceHtml += `<span id="rec-char-${charIdx}" class="story-char-span">${ch}</span>`;
+          charIdx++;
+        }
+        sentenceHtml += `<span id="target-blank" class="target-blank">？</span>`;
+        for (const ch of after) {
+          sentenceHtml += `<span id="rec-char-${charIdx}" class="story-char-span">${ch}</span>`;
+          charIdx++;
+        }
+      } else {
+        for (const ch of q.sentence) {
+          sentenceHtml += `<span id="rec-char-${charIdx}" class="story-char-span">${ch}</span>`;
+          charIdx++;
+        }
+      }
 
       this.container.innerHTML = `
         <div class="game-module-card">
@@ -69,8 +100,8 @@
           </div>
 
           <div class="options-grid" id="options-grid">
-            ${options.map(opt => `
-              <button class="option-btn" data-val="${opt}">${opt}</button>
+            ${options.map((opt, oIdx) => `
+              <button class="option-btn" id="rec-opt-${oIdx}" data-val="${opt}">${opt}</button>
             `).join('')}
           </div>
 
@@ -107,22 +138,124 @@
     }
 
     startQuestionRead(q, options, readBtn, stopBtn) {
+      if (!('speechSynthesis' in window)) return;
+      this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
       this.isReadingPrompt = true;
       if (readBtn) readBtn.style.display = 'none';
       if (stopBtn) stopBtn.style.display = 'inline-block';
 
-      // Replace blank with natural spoken placeholder
-      const promptText = q.sentence.replace('［  ］', '什麼');
-      const spokenText = `${promptText}。選項有：${options.join('、')}。`;
+      // Build spoken text and character index map
+      let spokenText = '';
+      const spanMap = [];
+      let cIdx = 0;
+      const blankIndex = q.sentence.indexOf('［  ］');
 
-      this.engine.speakText(spokenText, () => {
-        this.stopQuestionRead(readBtn, stopBtn);
+      if (blankIndex !== -1) {
+        const before = q.sentence.slice(0, blankIndex);
+        const after = q.sentence.slice(blankIndex + 4);
+        for (const ch of before) {
+          spokenText += ch;
+          spanMap.push(`rec-char-${cIdx}`);
+          cIdx++;
+        }
+        // Blank spoken as '什麼'
+        spokenText += '什麼';
+        spanMap.push('target-blank');
+        spanMap.push('target-blank');
+        for (const ch of after) {
+          spokenText += ch;
+          spanMap.push(`rec-char-${cIdx}`);
+          cIdx++;
+        }
+      } else {
+        for (const ch of q.sentence) {
+          spokenText += ch;
+          spanMap.push(`rec-char-${cIdx}`);
+          cIdx++;
+        }
+      }
+
+      spokenText += '。選項有：';
+      for (let i = 0; i < 5; i++) spanMap.push(null);
+
+      options.forEach((opt, oIdx) => {
+        if (oIdx > 0) {
+          spokenText += '、';
+          spanMap.push(null);
+        }
+        for (const ch of opt) {
+          spokenText += ch;
+          spanMap.push(`rec-opt-${oIdx}`);
+        }
       });
+      spokenText += '。';
+      spanMap.push(null);
+
+      const highlightElement = (targetId) => {
+        this.clearAllHighlights();
+        if (!targetId) return;
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.classList.add('story-highlight');
+          if (el.scrollIntoView) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }
+      };
+
+      const utterance = new SpeechSynthesisUtterance(spokenText);
+      utterance.lang = this.engine.speechLang;
+      utterance.rate = 0.85;
+
+      let boundaryFired = false;
+      let timerIdx = 0;
+
+      utterance.onboundary = (e) => {
+        boundaryFired = true;
+        if (this.promptFallbackTimer) {
+          clearInterval(this.promptFallbackTimer);
+          this.promptFallbackTimer = null;
+        }
+        if (e.charIndex !== undefined && spanMap[e.charIndex] !== undefined) {
+          highlightElement(spanMap[e.charIndex]);
+        }
+      };
+
+      // iOS WebKit Fallback timer
+      this.promptFallbackTimer = setInterval(() => {
+        if (boundaryFired) {
+          clearInterval(this.promptFallbackTimer);
+          return;
+        }
+        if (timerIdx < spanMap.length) {
+          highlightElement(spanMap[timerIdx]);
+          timerIdx++;
+        } else {
+          clearInterval(this.promptFallbackTimer);
+        }
+      }, 310);
+
+      const onFinish = () => {
+        this.stopQuestionRead(readBtn, stopBtn);
+      };
+
+      utterance.onend = onFinish;
+      utterance.onerror = onFinish;
+
+      window.speechSynthesis.speak(utterance);
     }
 
     stopQuestionRead(readBtn, stopBtn) {
       this.isReadingPrompt = false;
+      if (this.promptFallbackTimer) {
+        clearInterval(this.promptFallbackTimer);
+        this.promptFallbackTimer = null;
+      }
       this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
       const rBtn = readBtn || document.getElementById('btn-read-rec-q');
       const sBtn = stopBtn || document.getElementById('btn-stop-rec-q');
       if (rBtn) rBtn.style.display = 'inline-block';
@@ -137,6 +270,7 @@
 
       if (isCorrect) {
         this.isProcessing = true;
+        this.clearAllHighlights();
         btnEl.classList.add('correct');
         this.engine.playSuccessSound();
 
@@ -163,9 +297,8 @@
           weakTag: '✅ 已掌握'
         });
 
-        // Speak full completed sentence with natural pause
-        const fullSentence = q.sentence.replace('［  ］', q.answer);
-        this.engine.speakText(fullSentence, () => {
+        // Speak full completed sentence with karaoke character highlighting
+        this.speakConfirmationSentence(q.sentence, q.answer, () => {
           setTimeout(() => {
             this.currentIndex++;
             this.renderQuestion();
@@ -178,6 +311,7 @@
         this.engine.playErrorSound();
 
         if (this.attempts >= 2) {
+          this.isProcessing = true;
           // Trigger Socratic AI Hint on struggle
           this.engine.triggerSocraticHint({
             char: q.answer,
@@ -186,7 +320,11 @@
 
           // Reveal answer after 2 attempts
           const blank = document.getElementById('target-blank');
-          if (blank) blank.textContent = q.answer;
+          if (blank) {
+            blank.textContent = q.answer;
+            blank.style.background = '#ffcdd2';
+            blank.style.borderColor = '#c62828';
+          }
 
           this.engine.recordAnswer({
             module: '礦洞選字',
@@ -200,8 +338,7 @@
           });
 
           setTimeout(() => {
-            const fullSentence = q.sentence.replace('［  ］', q.answer);
-            this.engine.speakText(fullSentence, () => {
+            this.speakConfirmationSentence(q.sentence, q.answer, () => {
               setTimeout(() => {
                 this.currentIndex++;
                 this.renderQuestion();
@@ -210,6 +347,87 @@
           }, 1500);
         }
       }
+    }
+
+    speakConfirmationSentence(sentenceTemplate, answerChar, onEnd) {
+      if (!('speechSynthesis' in window)) return onEnd && onEnd();
+      this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
+      const fullSentence = sentenceTemplate.replace('［  ］', answerChar);
+      const spanMap = [];
+      let cIdx = 0;
+      const blankIndex = sentenceTemplate.indexOf('［  ］');
+
+      if (blankIndex !== -1) {
+        const before = sentenceTemplate.slice(0, blankIndex);
+        const after = sentenceTemplate.slice(blankIndex + 4);
+        for (const ch of before) {
+          spanMap.push(`rec-char-${cIdx}`);
+          cIdx++;
+        }
+        spanMap.push('target-blank');
+        for (const ch of after) {
+          spanMap.push(`rec-char-${cIdx}`);
+          cIdx++;
+        }
+      } else {
+        for (let i = 0; i < fullSentence.length; i++) {
+          spanMap.push(`rec-char-${i}`);
+        }
+      }
+
+      const highlightElement = (targetId) => {
+        this.clearAllHighlights();
+        if (!targetId) return;
+        const el = document.getElementById(targetId);
+        if (el) el.classList.add('story-highlight');
+      };
+
+      const utterance = new SpeechSynthesisUtterance(fullSentence);
+      utterance.lang = this.engine.speechLang;
+      utterance.rate = 0.85;
+
+      let boundaryFired = false;
+      let timerIdx = 0;
+
+      utterance.onboundary = (e) => {
+        boundaryFired = true;
+        if (this.confirmFallbackTimer) {
+          clearInterval(this.confirmFallbackTimer);
+          this.confirmFallbackTimer = null;
+        }
+        if (e.charIndex !== undefined && spanMap[e.charIndex] !== undefined) {
+          highlightElement(spanMap[e.charIndex]);
+        }
+      };
+
+      this.confirmFallbackTimer = setInterval(() => {
+        if (boundaryFired) {
+          clearInterval(this.confirmFallbackTimer);
+          return;
+        }
+        if (timerIdx < spanMap.length) {
+          highlightElement(spanMap[timerIdx]);
+          timerIdx++;
+        } else {
+          clearInterval(this.confirmFallbackTimer);
+        }
+      }, 310);
+
+      const onFinish = () => {
+        if (this.confirmFallbackTimer) {
+          clearInterval(this.confirmFallbackTimer);
+          this.confirmFallbackTimer = null;
+        }
+        this.clearAllHighlights();
+        if (onEnd) onEnd();
+      };
+
+      utterance.onend = onFinish;
+      utterance.onerror = onFinish;
+
+      window.speechSynthesis.speak(utterance);
     }
 
     renderCompletion() {
