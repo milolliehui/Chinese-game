@@ -1,6 +1,7 @@
 /**
  * Module 1: 礦洞選字 (Word Recognition & Sentence Fill-in)
  * Pluggable activity module.
+ * Enhanced with pre-selection question and options read-aloud button.
  */
 
 (function(window) {
@@ -12,13 +13,20 @@
       this.questions = [];
       this.attempts = 0;
       this.isProcessing = false;
+      this.isReadingPrompt = false;
     }
 
     render(container, levelData) {
+      this.cleanup();
       this.container = container;
       this.questions = levelData?.recognition || [];
       this.currentIndex = 0;
       this.renderQuestion();
+    }
+
+    cleanup() {
+      this.stopQuestionRead();
+      this.isProcessing = false;
     }
 
     renderQuestion() {
@@ -29,6 +37,7 @@
 
       this.attempts = 0;
       this.isProcessing = false;
+      this.isReadingPrompt = false;
       const q = this.questions[this.currentIndex];
 
       // Shuffle options and guarantee answer is randomized across positions
@@ -46,9 +55,13 @@
 
       this.container.innerHTML = `
         <div class="game-module-card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
             <span class="hud-badge" style="font-size:0.95rem;">⛏️ 礦洞選字 第 ${this.currentIndex + 1} / ${this.questions.length} 題</span>
-            <span style="font-size:0.9rem; color:#555;">提示: ${q.hint || '請選出正確的字'}</span>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <span style="font-size:0.85rem; color:#555;">提示: ${q.hint || '請選出正確的字'}</span>
+              <button class="hud-btn" id="btn-read-rec-q" style="font-size:0.85rem; padding:4px 8px;">🔊 朗讀題目與選項</button>
+              <button class="hud-btn" id="btn-stop-rec-q" style="font-size:0.85rem; padding:4px 8px; display:none;">⏹️ 停止</button>
+            </div>
           </div>
 
           <div class="sentence-container" id="sentence-box">
@@ -71,11 +84,49 @@
         </div>
       `;
 
-      // Bind button events
+      // Read question & options audio button
+      const readBtn = document.getElementById('btn-read-rec-q');
+      const stopBtn = document.getElementById('btn-stop-rec-q');
+
+      readBtn.addEventListener('click', () => {
+        this.startQuestionRead(q, options, readBtn, stopBtn);
+      });
+
+      stopBtn.addEventListener('click', () => {
+        this.stopQuestionRead(readBtn, stopBtn);
+      });
+
+      // Bind option button events
       const btns = this.container.querySelectorAll('.option-btn');
       btns.forEach(btn => {
-        btn.addEventListener('click', (e) => this.handleAnswer(btn.dataset.val, btn, q));
+        btn.addEventListener('click', () => {
+          this.stopQuestionRead(readBtn, stopBtn);
+          this.handleAnswer(btn.dataset.val, btn, q);
+        });
       });
+    }
+
+    startQuestionRead(q, options, readBtn, stopBtn) {
+      this.isReadingPrompt = true;
+      if (readBtn) readBtn.style.display = 'none';
+      if (stopBtn) stopBtn.style.display = 'inline-block';
+
+      // Replace blank with natural spoken placeholder
+      const promptText = q.sentence.replace('［  ］', '什麼');
+      const spokenText = `${promptText}。選項有：${options.join('、')}。`;
+
+      this.engine.speakText(spokenText, () => {
+        this.stopQuestionRead(readBtn, stopBtn);
+      });
+    }
+
+    stopQuestionRead(readBtn, stopBtn) {
+      this.isReadingPrompt = false;
+      this.engine.cancelSpeech();
+      const rBtn = readBtn || document.getElementById('btn-read-rec-q');
+      const sBtn = stopBtn || document.getElementById('btn-stop-rec-q');
+      if (rBtn) rBtn.style.display = 'inline-block';
+      if (sBtn) sBtn.style.display = 'none';
     }
 
     handleAnswer(selected, btnEl, q) {

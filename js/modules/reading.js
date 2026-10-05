@@ -1,7 +1,7 @@
 /**
  * Module 3: 村莊冒險日記 (Reading Comprehension & Karaoke Highlighting)
  * Pluggable activity module.
- * Hardened against QA multi-tap race conditions and speech timer leaks.
+ * Enhanced with question and options read-aloud buttons for comprehension QA.
  */
 
 (function(window) {
@@ -15,6 +15,7 @@
       this.fallbackTimer = null;
       this.attempts = 0;
       this.isProcessing = false;
+      this.isReadingQA = false;
     }
 
     render(container, levelData) {
@@ -24,6 +25,7 @@
       this.currentQIndex = 0;
       this.isReading = false;
       this.isProcessing = false;
+      this.isReadingQA = false;
       this.renderView();
     }
 
@@ -34,6 +36,7 @@
       }
       this.isReading = false;
       this.isProcessing = false;
+      this.stopQAQuestionRead();
       this.clearHighlights();
     }
 
@@ -186,6 +189,7 @@
 
       this.attempts = 0;
       this.isProcessing = false;
+      this.isReadingQA = false;
       const q = questions[this.currentQIndex];
 
       // Shuffle options with answer rotation
@@ -197,8 +201,14 @@
 
       qaContainer.innerHTML = `
         <div style="background:#f0f0f0; border:2px solid #000; padding:10px; border-radius:4px;">
-          <div style="font-weight:bold; font-size:1.15rem; margin-bottom:8px;">
-            ❓ 問題 ${this.currentQIndex + 1} / ${questions.length}: ${q.question}
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+            <div style="font-weight:bold; font-size:1.15rem;">
+              ❓ 問題 ${this.currentQIndex + 1} / ${questions.length}: ${q.question}
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="hud-btn" id="btn-read-qa-q" style="font-size:0.85rem; padding:4px 8px;">🔊 朗讀問題與選項</button>
+              <button class="hud-btn" id="btn-stop-qa-q" style="font-size:0.85rem; padding:4px 8px; display:none;">⏹️ 停止</button>
+            </div>
           </div>
           <div class="options-grid">
             ${options.map(opt => `
@@ -210,11 +220,44 @@
         </div>
       `;
 
+      // Read QA audio buttons
+      const readQABtn = document.getElementById('btn-read-qa-q');
+      const stopQABtn = document.getElementById('btn-stop-qa-q');
+
+      readQABtn.addEventListener('click', () => {
+        this.startQAQuestionRead(q, options, readQABtn, stopQABtn);
+      });
+
+      stopQABtn.addEventListener('click', () => {
+        this.stopQAQuestionRead(readQABtn, stopQABtn);
+      });
+
       qaContainer.querySelectorAll('.qa-opt-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+          this.stopQAQuestionRead(readQABtn, stopQABtn);
           this.handleQAAnswer(btn.dataset.val, btn, q, questions);
         });
       });
+    }
+
+    startQAQuestionRead(q, options, readBtn, stopBtn) {
+      this.isReadingQA = true;
+      if (readBtn) readBtn.style.display = 'none';
+      if (stopBtn) stopBtn.style.display = 'inline-block';
+
+      const spokenText = `${q.question}。選項有：${options.join('；')}。`;
+      this.engine.speakText(spokenText, () => {
+        this.stopQAQuestionRead(readBtn, stopBtn);
+      });
+    }
+
+    stopQAQuestionRead(readBtn, stopBtn) {
+      this.isReadingQA = false;
+      this.engine.cancelSpeech();
+      const rBtn = readBtn || document.getElementById('btn-read-qa-q');
+      const sBtn = stopBtn || document.getElementById('btn-stop-qa-q');
+      if (rBtn) rBtn.style.display = 'inline-block';
+      if (sBtn) sBtn.style.display = 'none';
     }
 
     handleQAAnswer(selected, btnEl, q, questions) {

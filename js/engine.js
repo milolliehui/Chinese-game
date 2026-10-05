@@ -172,17 +172,16 @@
       this.playTone(220, 0.25, 'sawtooth');
     }
 
-    // Speech synthesis wrapper with cancel protection
+    // Speech synthesis wrapper with cancel protection (does not recurse into module cleanup)
     cancelSpeech() {
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+        try {
+          window.speechSynthesis.cancel();
+        } catch (e) {}
       }
       if (this.storyFallbackTimer) {
         clearInterval(this.storyFallbackTimer);
         this.storyFallbackTimer = null;
-      }
-      if (this.activeModuleId && this.modules[this.activeModuleId]?.cleanup) {
-        this.modules[this.activeModuleId].cleanup();
       }
     }
 
