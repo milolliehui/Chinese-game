@@ -1,0 +1,31 @@
+/* Space Explorer Theme Tokens (Example Swappable Skin) */
+:root[data-theme="space"] {
+  --theme-name: "space";
+  --theme-bg: #0b0f19; /* Deep Space */
+  --theme-panel-bg: #151d30; /* Cosmic Panel */
+  --theme-border-color: #3b82f6;
+  --theme-border-width: 2px;
+  --theme-radius: 8px; /* Modern rounded corners */
+  --theme-radius-sm: 6px;
+
+  --theme-text: #e2e8f0;
+  --theme-accent: #38bdf8; /* Cyan star pulse */
+  --theme-wood: #2563eb;
+  --theme-grass: #06b6d4;
+
+  --theme-panel-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(59, 130, 246, 0.2);
+  --theme-box-bg: #1e293b;
+
+  --theme-btn-bg: #1e3a8a;
+  --theme-btn-color: #ffffff;
+  --theme-btn-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+  --theme-btn-primary-bg: #0284c7;
+
+  --theme-badge-bg: #0f172a;
+  --theme-badge-color: #38bdf8;
+
+  --theme-tab-inactive-bg: #334155;
+  --theme-tab-inactive-color: #94a3b8;
+  --theme-tab-active-bg: #2563eb;
+  --theme-tab-active-color: #ffffff;
+}

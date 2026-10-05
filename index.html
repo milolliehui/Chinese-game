@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>中文島 - 冒險學習 2.0</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/theme-minecraft.css">
+  <link rel="stylesheet" href="./css/theme-space.css">
+  <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+</head>
+<body>
+  <div id="game-app">
+    <!-- Header HUD -->
+    <header class="game-hud">
+      <div class="hud-left">
+        <h1 class="hud-title" id="app-title">中文島 2.0</h1>
+        <button class="hud-badge" id="emerald-count" title="點擊調整分數" style="cursor:pointer;">
+          💎 0
+        </button>
+      </div>
+      <div class="hud-right">
+        <button class="hud-btn" id="btn-switch-child">👦 Milo ⇄</button>
+        <button class="hud-btn" id="btn-toggle-lang">🗣️ 普通話</button>
+        <select class="level-select" id="level-select"></select>
+        <button class="hud-btn" id="btn-sync-cloud" title="同步雲端題庫與作答">☁️</button>
+      </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="game-nav">
+      <button class="nav-tab active" data-module="recognition">⛏️ 礦洞選字</button>
+      <button class="nav-tab" data-module="handwriting">🔨 合成台練字</button>
+      <button class="nav-tab" data-module="reading">📖 村莊冒險日記</button>
+    </nav>
+
+    <!-- Main Game Stage -->
+    <main class="game-stage" id="game-stage">
+      <div style="text-align:center; padding:40px; font-size:1.2rem;">正在載入關卡內容...</div>
+    </main>
+  </div>
+
+  <!-- Parent Score Adjustment Modal -->
+  <div class="modal-overlay" id="parent-modal">
+    <div class="modal-content">
+      <h3 style="font-size:1.3rem; margin-bottom:10px;">👑 家長專用：綠寶石調整</h3>
+      <p style="font-size:0.95rem; margin-bottom:12px; color:#444;">您可以手動微調孩子的綠寶石獎勵數量：</p>
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:14px;">
+        <label for="input-emerald" style="font-weight:bold;">綠寶石數量：</label>
+        <input type="number" id="input-emerald" style="padding:6px; font-size:1.1rem; width:100px; border:2px solid #000;">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="hud-btn" id="btn-modal-cancel">取消</button>
+        <button class="hud-btn primary" id="btn-modal-save">儲存設定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cloud Sync Status Modal -->
+  <div class="modal-overlay" id="sync-modal">
+    <div class="modal-content">
+      <h3 style="font-size:1.3rem; margin-bottom:10px;">☁️ 雲端題庫與同步狀態</h3>
+      <p id="sync-status-msg" style="font-size:1rem; margin-bottom:14px; line-height:1.5;">正在檢查雲端連線...</p>
+      <div style="display:flex; justify-content:flex-end;">
+        <button class="hud-btn primary" id="btn-sync-close">確定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Scripts -->
+  <script src="./js/questions_default.js"></script>
+  <script src="./js/adapter.js"></script>
+  <script src="./js/engine.js"></script>
+  <script src="./js/modules/recognition.js"></script>
+  <script src="./js/modules/handwriting.js"></script>
+  <script src="./js/modules/reading.js"></script>
+
+  <!-- Application Bootstrap -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Initialize Engine
+      const engine = new window.GameEngine();
+      window.engine = engine;
+
+      // 2. Register Activity Modules
+      engine.registerModule('recognition', new window.RecognitionModule());
+      engine.registerModule('handwriting', new window.HandwritingModule());
+      engine.registerModule('reading', new window.ReadingModule());
+
+      // 3. Load Questions from DataAdapter
+      const levels = window.DataAdapter.getLevels(engine.activeChild);
+      engine.loadLevels(levels);
+      engine.switchModule('recognition');
+      engine.updateHUD();
+
+      // 4. Background Cloud Update Attempt
+      window.DataAdapter.fetchCloudQuestions(engine.activeChild, (newLevels) => {
+        console.log('Successfully fetched fresh questions from cloud:', newLevels);
+        engine.loadLevels(newLevels);
+      }, (err) => {
+        console.log('Using cached/offline questions:', err);
+      });
+
+      // 5. Wire Event Handlers
+      // Profile Switch
+      document.getElementById('btn-switch-child').addEventListener('click', () => {
+        const next = engine.activeChild === 'milo' ? 'ollie' : 'milo';
+        engine.setChild(next);
+      });
+
+      // Dialect Toggle (Mandarin / Cantonese)
+      document.getElementById('btn-toggle-lang').addEventListener('click', () => {
+        engine.toggleSpeechDialect();
+      });
+
+      // Level Dropdown
+      document.getElementById('level-select').addEventListener('change', (e) => {
+        engine.selectLevel(parseInt(e.target.value, 10));
+      });
+
+      // Navigation Tabs
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          engine.switchModule(tab.dataset.module);
+        });
+      });
+
+      // Cloud Sync Button
+      document.getElementById('btn-sync-cloud').addEventListener('click', () => {
+        const modal = document.getElementById('sync-modal');
+        const msg = document.getElementById('sync-status-msg');
+        modal.classList.add('active');
+        msg.textContent = '正在自 Google Drive / 試算表拉取最新關卡...';
+
+        window.DataAdapter.fetchCloudQuestions(engine.activeChild, (newLevels) => {
+          engine.loadLevels(newLevels);
+          msg.textContent = `✅ 同步成功！已載入 ${newLevels.length} 個最新關卡。`;
+          window.DataAdapter.flushOfflineQueue();
+        }, (err) => {
+          msg.textContent = `ℹ️ 目前使用本機離線題庫 (${err})。作答紀錄已在背景暫存，稍後聯網將自動同步。`;
+        });
+      });
+
+      document.getElementById('btn-sync-close').addEventListener('click', () => {
+        document.getElementById('sync-modal').classList.remove('active');
+      });
+
+      // Parent Emerald Modal
+      const parentModal = document.getElementById('parent-modal');
+      document.getElementById('emerald-count').addEventListener('click', () => {
+        document.getElementById('input-emerald').value = engine.state.emeralds[engine.activeChild] || 0;
+        parentModal.classList.add('active');
+      });
+
+      document.getElementById('btn-modal-cancel').addEventListener('click', () => {
+        parentModal.classList.remove('active');
+      });
+
+      document.getElementById('btn-modal-save').addEventListener('click', () => {
+        const val = parseInt(document.getElementById('input-emerald').value, 10);
+        if (!isNaN(val)) {
+          engine.state.emeralds[engine.activeChild] = val;
+          engine.saveState();
+          engine.updateHUD();
+        }
+        parentModal.classList.remove('active');
+      });
+
+      // Register PWA Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.warn('Service Worker registration skipped:', err);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

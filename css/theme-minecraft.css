@@ -1,0 +1,33 @@
+/* Minecraft Voxel Visual Theme Tokens */
+:root {
+  --theme-name: "minecraft";
+  --theme-bg: #866043; /* Minecraft Dirt */
+  --theme-panel-bg: #c6c6c6; /* Stone panel */
+  --theme-border-color: #000000;
+  --theme-border-width: 3px;
+  --theme-radius: 0px; /* Crisp voxel corners */
+  --theme-radius-sm: 0px;
+
+  --theme-text: #1e1e1e;
+  --theme-accent: #17dd62; /* Minecraft Emerald */
+  --theme-wood: #b88746;
+  --theme-grass: #5c8e32;
+
+  --theme-panel-shadow: inset -4px -4px #555, inset 4px 4px #fff;
+  --theme-box-bg: #e0e0e0;
+
+  --theme-btn-bg: var(--theme-wood);
+  --theme-btn-color: #ffffff;
+  --theme-btn-shadow: inset -3px -3px #8c5e26, inset 3px 3px #d69f58;
+  --theme-btn-primary-bg: var(--theme-grass);
+
+  --theme-badge-bg: #222222;
+  --theme-badge-color: var(--theme-accent);
+
+  --theme-tab-inactive-bg: #888888;
+  --theme-tab-inactive-color: #ffffff;
+  --theme-tab-active-bg: var(--theme-grass);
+  --theme-tab-active-color: #ffffff;
+
+  --theme-font: -apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Microsoft YaHei", sans-serif;
+}

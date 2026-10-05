@@ -1,0 +1,326 @@
+/* Base layout and structural styles for Educational Game Engine */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  font-family: var(--theme-font, -apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Microsoft YaHei", sans-serif);
+  background: var(--theme-bg, #2b2b2b);
+  color: var(--theme-text, #1e1e1e);
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+#game-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: max(env(safe-area-inset-top, 0px) + 16px, 44px) 12px max(env(safe-area-inset-bottom, 0px), 12px) 12px;
+}
+
+/* Header & HUD */
+.game-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--theme-panel-bg, #eee);
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-panel-shadow, none);
+  margin-bottom: 8px;
+  border-radius: var(--theme-radius, 0px);
+}
+
+.hud-left, .hud-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.hud-badge {
+  background: var(--theme-badge-bg, #222);
+  color: var(--theme-badge-color, #17dd62);
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 4px 10px;
+  border: var(--theme-border-width, 2px) solid var(--theme-border-color, #000);
+  border-radius: var(--theme-radius-sm, 0px);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hud-btn {
+  background: var(--theme-btn-bg, #b88746);
+  color: var(--theme-btn-color, #fff);
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 6px 10px;
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-btn-shadow, none);
+  cursor: pointer;
+  border-radius: var(--theme-radius-sm, 0px);
+  transition: transform 0.08s ease, filter 0.08s ease;
+}
+
+.hud-btn:active {
+  transform: translate(2px, 2px);
+  filter: brightness(0.92);
+}
+
+.hud-btn.primary {
+  background: var(--theme-btn-primary-bg, #5c8e32);
+}
+
+/* Level Select in HUD */
+.level-select {
+  font-size: 0.95rem;
+  font-weight: bold;
+  padding: 4px 6px;
+  border: var(--theme-border-width, 2px) solid var(--theme-border-color, #000);
+  background: #fff;
+  border-radius: var(--theme-radius-sm, 0px);
+  max-width: 170px;
+}
+
+/* Tab Navigation */
+.game-nav {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.nav-tab {
+  flex: 1;
+  padding: 10px 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  background: var(--theme-tab-inactive-bg, #999);
+  color: var(--theme-tab-inactive-color, #333);
+  cursor: pointer;
+  text-align: center;
+  border-radius: var(--theme-radius-sm, 0px);
+  transition: background 0.12s ease;
+}
+
+.nav-tab.active {
+  background: var(--theme-tab-active-bg, #5c8e32);
+  color: var(--theme-tab-active-color, #fff);
+}
+
+/* Stage & Container */
+.game-stage {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+}
+
+.game-module-card {
+  background: var(--theme-panel-bg, #c6c6c6);
+  border: var(--theme-border-width, 4px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-panel-shadow, none);
+  padding: 14px;
+  border-radius: var(--theme-radius, 0px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Module 1: Recognition & Sentence Box */
+.sentence-container {
+  background: var(--theme-box-bg, #e0e0e0);
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  padding: 14px;
+  font-size: 1.45rem;
+  font-weight: bold;
+  line-height: 1.6;
+  border-radius: var(--theme-radius-sm, 0px);
+}
+
+.target-blank {
+  color: var(--theme-accent, #0b8043);
+  background: #c8e6c9;
+  padding: 2px 8px;
+  border: 2px dashed var(--theme-accent, #0b8043);
+  border-radius: 4px;
+  display: inline-block;
+  min-width: 48px;
+  text-align: center;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.option-btn {
+  min-height: 68px;
+  font-size: 2rem;
+  font-weight: bold;
+  background: #eee;
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-btn-shadow, none);
+  cursor: pointer;
+  border-radius: var(--theme-radius-sm, 0px);
+  transition: transform 0.08s ease;
+}
+
+.option-btn:active {
+  transform: translate(2px, 2px);
+}
+
+.option-btn.correct {
+  background: #a5d6a7 !important;
+  color: #1b5e20 !important;
+  border-color: #1b5e20 !important;
+}
+
+.option-btn.wrong {
+  background: #ef9a9a !important;
+  color: #b71c1c !important;
+  opacity: 0.6;
+}
+
+/* Module 2: Handwriting Crafting Table */
+.handwriting-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-info-box {
+  background: #ddd;
+  border: 2px solid #000;
+  padding: 4px 14px;
+  text-align: center;
+  border-radius: var(--theme-radius-sm, 0px);
+}
+
+.char-info-box h2 {
+  font-size: 2.3rem;
+  color: #1a5fb4;
+  line-height: 1.1;
+}
+
+.handwriting-canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  border: 3px solid #000;
+  margin: 6px auto;
+  border-radius: 4px;
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* Module 3: Story & Karaoke Highlighting */
+.story-box {
+  background: #fbfbfb;
+  border: 3px solid #000;
+  padding: 14px;
+  max-height: 250px;
+  overflow-y: auto;
+  font-size: 1.25rem;
+  line-height: 1.8;
+  border-radius: var(--theme-radius-sm, 0px);
+}
+
+.story-char-span {
+  display: inline;
+  transition: background-color 0.12s ease, color 0.12s ease;
+  border-radius: 3px;
+  padding: 1px 2px;
+}
+
+.story-char-span.story-highlight {
+  background: #ffeb3b !important;
+  color: #b71c1c !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 1px #d35400;
+  box-shadow: 0 0 8px rgba(241, 196, 15, 0.9);
+}
+
+/* AI Socratic Companion Box */
+.ai-companion-drawer {
+  background: #fff8e1;
+  border: 3px solid #f39c12;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  animation: slideUp 0.25s ease-out;
+}
+
+.ai-companion-avatar {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.ai-companion-body {
+  flex: 1;
+}
+
+.ai-companion-title {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #d35400;
+  margin-bottom: 2px;
+}
+
+.ai-companion-text {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.4;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--theme-panel-bg, #c6c6c6);
+  border: var(--theme-border-width, 4px) solid #000;
+  box-shadow: var(--theme-panel-shadow, none);
+  padding: 18px;
+  max-width: 500px;
+  width: 90%;
+  border-radius: var(--theme-radius, 0px);
+}
