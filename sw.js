@@ -1,12 +1,10 @@
 /**
  * Chinese Game 2.0 - Service Worker
  * Provides offline caching for seamless iPad practice.
- * Hardened to ensure local assets always cache reliably even if external CDNs are unavailable.
  */
 
-const CACHE_NAME = 'chinese-game-v2-cache-v2';
-
-const LOCAL_ASSETS = [
+const CACHE_NAME = 'chinese-game-v2-cache-v1';
+const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
@@ -19,28 +17,15 @@ const LOCAL_ASSETS = [
   './js/modules/recognition.js',
   './js/modules/handwriting.js',
   './js/modules/reading.js',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
-];
-
-const EXTERNAL_ASSETS = [
   'https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      // 1. Core local assets MUST be cached successfully
-      await cache.addAll(LOCAL_ASSETS);
-
-      // 2. Cache external CDN assets resiliently without failing the install Promise
-      for (const url of EXTERNAL_ASSETS) {
-        try {
-          await cache.add(url);
-        } catch (err) {
-          console.warn('External asset caching deferred until online:', url);
-        }
-      }
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE).catch(err => {
+        console.warn('Some assets could not be cached immediately:', err);
+      });
     })
   );
   self.skipWaiting();
