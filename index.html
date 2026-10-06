@@ -7,9 +7,415 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="./manifest.json">
-  <link rel="stylesheet" href="./css/base.css">
-  <link rel="stylesheet" href="./css/theme-minecraft.css">
-  <link rel="stylesheet" href="./css/theme-space.css">
+  <style>
+/* Base layout and structural styles for Educational Game Engine */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  font-family: var(--theme-font, -apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Microsoft YaHei", sans-serif);
+  background: var(--theme-bg, #2b2b2b);
+  color: var(--theme-text, #1e1e1e);
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+#game-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: max(env(safe-area-inset-top, 0px) + 16px, 44px) 12px max(env(safe-area-inset-bottom, 0px), 12px) 12px;
+}
+
+/* Header & HUD */
+.game-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--theme-panel-bg, #eee);
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-panel-shadow, none);
+  margin-bottom: 8px;
+  border-radius: var(--theme-radius, 0px);
+}
+
+.hud-left, .hud-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.hud-badge {
+  background: var(--theme-badge-bg, #222);
+  color: var(--theme-badge-color, #17dd62);
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 4px 10px;
+  border: var(--theme-border-width, 2px) solid var(--theme-border-color, #000);
+  border-radius: var(--theme-radius-sm, 0px);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hud-btn {
+  background: var(--theme-btn-bg, #b88746);
+  color: var(--theme-btn-color, #fff);
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 6px 10px;
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-btn-shadow, none);
+  cursor: pointer;
+  border-radius: var(--theme-radius-sm, 0px);
+  transition: transform 0.08s ease, filter 0.08s ease;
+}
+
+.hud-btn:active {
+  transform: translate(2px, 2px);
+  filter: brightness(0.92);
+}
+
+.hud-btn.primary {
+  background: var(--theme-btn-primary-bg, #5c8e32);
+}
+
+/* Level Select in HUD */
+.level-select {
+  font-size: 0.95rem;
+  font-weight: bold;
+  padding: 4px 6px;
+  border: var(--theme-border-width, 2px) solid var(--theme-border-color, #000);
+  background: #fff;
+  border-radius: var(--theme-radius-sm, 0px);
+  max-width: 170px;
+}
+
+/* Tab Navigation */
+.game-nav {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.nav-tab {
+  flex: 1;
+  padding: 10px 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  background: var(--theme-tab-inactive-bg, #999);
+  color: var(--theme-tab-inactive-color, #333);
+  cursor: pointer;
+  text-align: center;
+  border-radius: var(--theme-radius-sm, 0px);
+  transition: background 0.12s ease;
+}
+
+.nav-tab.active {
+  background: var(--theme-tab-active-bg, #5c8e32);
+  color: var(--theme-tab-active-color, #fff);
+}
+
+/* Stage & Container */
+.game-stage {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+}
+
+.game-module-card {
+  background: var(--theme-panel-bg, #c6c6c6);
+  border: var(--theme-border-width, 4px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-panel-shadow, none);
+  padding: 14px;
+  border-radius: var(--theme-radius, 0px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Module 1: Recognition & Sentence Box */
+.sentence-container {
+  background: var(--theme-box-bg, #e0e0e0);
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  padding: 14px;
+  font-size: 1.45rem;
+  font-weight: bold;
+  line-height: 1.6;
+  border-radius: var(--theme-radius-sm, 0px);
+}
+
+.target-blank {
+  color: var(--theme-accent, #0b8043);
+  background: #c8e6c9;
+  padding: 2px 8px;
+  border: 2px dashed var(--theme-accent, #0b8043);
+  border-radius: 4px;
+  display: inline-block;
+  min-width: 48px;
+  text-align: center;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.option-btn {
+  min-height: 68px;
+  font-size: 2rem;
+  font-weight: bold;
+  background: #eee;
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-btn-shadow, none);
+  cursor: pointer;
+  border-radius: var(--theme-radius-sm, 0px);
+  transition: transform 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.option-btn:active {
+  transform: translate(2px, 2px);
+}
+
+.option-btn.correct {
+  background: #a5d6a7 !important;
+  color: #1b5e20 !important;
+  border-color: #1b5e20 !important;
+}
+
+.option-btn.wrong {
+  background: #ef9a9a !important;
+  color: #b71c1c !important;
+  opacity: 0.6;
+}
+
+/* Karaoke Highlighting on Option Buttons & Target Blank */
+.option-btn.story-highlight,
+.target-blank.story-highlight {
+  background: #ffeb3b !important;
+  color: #b71c1c !important;
+  font-weight: 900 !important;
+  border-color: #d35400 !important;
+  box-shadow: 0 0 14px rgba(241, 196, 15, 0.95) !important;
+  transform: scale(1.04);
+}
+
+/* Module 2: Handwriting Crafting Table */
+.handwriting-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-info-box {
+  background: #ddd;
+  border: 2px solid #000;
+  padding: 4px 14px;
+  text-align: center;
+  border-radius: var(--theme-radius-sm, 0px);
+}
+
+.char-info-box h2 {
+  font-size: 2.3rem;
+  color: #1a5fb4;
+  line-height: 1.1;
+}
+
+.handwriting-canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  border: 3px solid #000;
+  margin: 6px auto;
+  border-radius: 4px;
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* Module 3: Story & Karaoke Highlighting */
+.story-box {
+  background: #fbfbfb;
+  border: 3px solid #000;
+  padding: 14px;
+  max-height: 250px;
+  overflow-y: auto;
+  font-size: 1.25rem;
+  line-height: 1.8;
+  border-radius: var(--theme-radius-sm, 0px);
+}
+
+.story-char-span {
+  display: inline;
+  transition: background-color 0.12s ease, color 0.12s ease;
+  border-radius: 3px;
+  padding: 1px 2px;
+}
+
+.story-char-span.story-highlight {
+  background: #ffeb3b !important;
+  color: #b71c1c !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 1px #d35400;
+  box-shadow: 0 0 8px rgba(241, 196, 15, 0.9);
+}
+
+/* AI Socratic Companion Box */
+.ai-companion-drawer {
+  background: #fff8e1;
+  border: 3px solid #f39c12;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  animation: slideUp 0.25s ease-out;
+}
+
+.ai-companion-avatar {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.ai-companion-body {
+  flex: 1;
+}
+
+.ai-companion-title {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #d35400;
+  margin-bottom: 2px;
+}
+
+.ai-companion-text {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.4;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--theme-panel-bg, #c6c6c6);
+  border: var(--theme-border-width, 4px) solid #000;
+  box-shadow: var(--theme-panel-shadow, none);
+  padding: 18px;
+  max-width: 500px;
+  width: 90%;
+  border-radius: var(--theme-radius, 0px);
+}
+
+/* Minecraft Voxel Visual Theme Tokens */
+:root {
+  --theme-name: "minecraft";
+  --theme-bg: #866043; /* Minecraft Dirt */
+  --theme-panel-bg: #c6c6c6; /* Stone panel */
+  --theme-border-color: #000000;
+  --theme-border-width: 3px;
+  --theme-radius: 0px; /* Crisp voxel corners */
+  --theme-radius-sm: 0px;
+
+  --theme-text: #1e1e1e;
+  --theme-accent: #17dd62; /* Minecraft Emerald */
+  --theme-wood: #b88746;
+  --theme-grass: #5c8e32;
+
+  --theme-panel-shadow: inset -4px -4px #555, inset 4px 4px #fff;
+  --theme-box-bg: #e0e0e0;
+
+  --theme-btn-bg: var(--theme-wood);
+  --theme-btn-color: #ffffff;
+  --theme-btn-shadow: inset -3px -3px #8c5e26, inset 3px 3px #d69f58;
+  --theme-btn-primary-bg: var(--theme-grass);
+
+  --theme-badge-bg: #222222;
+  --theme-badge-color: var(--theme-accent);
+
+  --theme-tab-inactive-bg: #888888;
+  --theme-tab-inactive-color: #ffffff;
+  --theme-tab-active-bg: var(--theme-grass);
+  --theme-tab-active-color: #ffffff;
+
+  --theme-font: -apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Microsoft YaHei", sans-serif;
+}
+
+/* Space Explorer Theme Tokens (Example Swappable Skin) */
+:root[data-theme="space"] {
+  --theme-name: "space";
+  --theme-bg: #0b0f19; /* Deep Space */
+  --theme-panel-bg: #151d30; /* Cosmic Panel */
+  --theme-border-color: #3b82f6;
+  --theme-border-width: 2px;
+  --theme-radius: 8px; /* Modern rounded corners */
+  --theme-radius-sm: 6px;
+
+  --theme-text: #e2e8f0;
+  --theme-accent: #38bdf8; /* Cyan star pulse */
+  --theme-wood: #2563eb;
+  --theme-grass: #06b6d4;
+
+  --theme-panel-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(59, 130, 246, 0.2);
+  --theme-box-bg: #1e293b;
+
+  --theme-btn-bg: #1e3a8a;
+  --theme-btn-color: #ffffff;
+  --theme-btn-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+  --theme-btn-primary-bg: #0284c7;
+
+  --theme-badge-bg: #0f172a;
+  --theme-badge-color: #38bdf8;
+
+  --theme-tab-inactive-bg: #334155;
+  --theme-tab-inactive-color: #94a3b8;
+  --theme-tab-active-bg: #2563eb;
+  --theme-tab-active-color: #ffffff;
+}
+
+</style>
+  
+  
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 </head>
 <body>
@@ -61,22 +467,2164 @@
 
   <!-- Cloud Sync Status Modal -->
   <div class="modal-overlay" id="sync-modal">
-    <div class="modal-content">
-      <h3 style="font-size:1.3rem; margin-bottom:10px;">☁️ 雲端題庫與同步狀態</h3>
-      <p id="sync-status-msg" style="font-size:1rem; margin-bottom:14px; line-height:1.5;">正在檢查雲端連線...</p>
-      <div style="display:flex; justify-content:flex-end;">
+    <div class="modal-content" style="max-width: 480px; width: 90%;">
+      <h3 style="font-size:1.3rem; margin-bottom:10px;">☁️ 雲端題庫與同步設定</h3>
+      <p id="sync-status-msg" style="font-size:0.95rem; margin-bottom:14px; line-height:1.5;">正在檢查雲端連線...</p>
+
+      <div style="margin: 12px 0; text-align: left; background: var(--theme-box-bg, #e0e0e0); padding: 10px; border: 2px solid #000; border-radius: 4px;">
+        <label for="input-webapp-url" style="font-size:0.85rem; font-weight:bold; display:block; margin-bottom:6px; color:#222;">
+          ⚙️ Google Apps Script Web App 網址：
+        </label>
+        <input type="url" id="input-webapp-url" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%; padding:8px; font-size:0.82rem; border:2px solid #000; box-sizing:border-box; background:#fff; font-family:monospace;">
+        <p style="font-size:0.75rem; color:#666; margin-top:4px;">若您部署了新的 Apps Script，可直接在此貼上並儲存。</p>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; gap:8px; margin-top:14px;">
+        <button class="hud-btn" id="btn-save-webapp-url">儲存網址並重試</button>
         <button class="hud-btn primary" id="btn-sync-close">確定</button>
       </div>
     </div>
   </div>
 
   <!-- Load Scripts -->
-  <script src="./js/questions_default.js"></script>
-  <script src="./js/adapter.js"></script>
-  <script src="./js/engine.js"></script>
-  <script src="./js/modules/recognition.js"></script>
-  <script src="./js/modules/handwriting.js"></script>
-  <script src="./js/modules/reading.js"></script>
+  <script>
+/**
+ * Chinese Game 2.0 - Default Curriculum Question Banks
+ * Tailored for Milo (intermediate primary) and Ollie (foundation primary).
+ * Strictly preserves English names Milo, Ollie, and their friend Bradley.
+ */
+
+window.DEFAULT_BANKS = {
+  milo: {
+    childName: "Milo",
+    grade: "進階 (Milo)",
+    levels: [
+      {
+        levelId: "milo_lvl_02",
+        date: "2026-10-06",
+        theme: "Bradley 來家裡做客",
+        recognition: [
+          {
+            sentence: "門鈴響起，Milo 熱情地打開大門，高興地［  ］接好朋友 Bradley 入屋。",
+            answer: "迎",
+            options: ["迎", "送", "走", "進"],
+            hint: "走字底，指主動走向前去接待客人",
+            socraticHint: "「迎」字由走字底和「卬」組成，表示向前迎接客人，不是送客的「送」喔！"
+          },
+          {
+            sentence: "為了好好款［  ］遠道而來的 Bradley，媽媽特地準備了美味的點心和水果。",
+            answer: "待",
+            options: ["待", "等", "持", "侍"],
+            hint: "雙人旁，指招待或接待客人",
+            socraticHint: "「待」是雙人旁，常用於「招待」、「接待」，指熱情照顧客人。"
+          },
+          {
+            sentence: "客廳裡充滿了歡歌笑語，大家一邊品嚐點心，一邊［  ］談著學校的趣事。",
+            answer: "暢",
+            options: ["暢", "唱", "腸", "長"],
+            hint: "申字旁，指心懷舒暢、痛痛快快地交談",
+            socraticHint: "「暢」表示舒暢、暢快，「暢談」就是毫無拘束地開心聊天！"
+          },
+          {
+            sentence: "Milo 和 Bradley 圍坐在書桌旁，聚精會神地下了一盤精彩的國際象［  ］。",
+            answer: "棋",
+            options: ["棋", "旗", "期", "基"],
+            hint: "木字旁，下棋的棋子",
+            socraticHint: "「棋」字是木字旁，古代棋子多用木頭製作，不要和紅旗的「旗」混淆囉！"
+          },
+          {
+            sentence: "臨別時，Bradley 彬彬有［  ］地向 Milo 一家人道謝，感謝大家的熱情款待。",
+            answer: "禮",
+            options: ["禮", "理", "李", "利"],
+            hint: "示字旁，代表禮貌與規矩",
+            socraticHint: "「禮」字是示字旁，代表禮儀、禮貌，懂禮貌的孩子最受歡迎！"
+          }
+        ],
+        handwriting: [
+          {
+            char: "迎",
+            pinyin: "yíng",
+            strokes: 7,
+            radical: "辵部 (辶)",
+            words: ["迎接", "歡迎", "喜迎", "迎面"]
+          },
+          {
+            char: "待",
+            pinyin: "dài",
+            strokes: 9,
+            radical: "彳部 (雙人旁)",
+            words: ["招待", "接待", "待遇", "期待"]
+          },
+          {
+            char: "暢",
+            pinyin: "chàng",
+            strokes: 14,
+            radical: "申部",
+            words: ["暢談", "暢快", "流暢", "舒暢"]
+          },
+          {
+            char: "棋",
+            pinyin: "qí",
+            strokes: 12,
+            radical: "木部",
+            words: ["象棋", "圍棋", "棋盤", "下棋"]
+          },
+          {
+            char: "禮",
+            pinyin: "lǐ",
+            strokes: 17,
+            radical: "示部 (礻)",
+            words: ["禮貌", "禮物", "典禮", "敬禮"]
+          }
+        ],
+        story: {
+          title: "Milo 與 Bradley 的溫馨聚會",
+          content: "週日的午後陽光柔和，好朋友 Bradley 興高采烈地來到 Milo 家做客。門鈴剛一響，Milo 便飛快地跑去開門，熱情地迎接著 Bradley。兩人在客廳裡擺出色彩繽紛的積木與棋盤，一起合作搭建了一座堅固的城堡，還下了一場鬥智鬥勇的棋局。媽媽端出了剛烤好的草莓鬆餅和冰鎮果汁，孩子們圍坐在桌旁暢談著校園裡的歡樂時光。時間過得飛快，臨別之際，Bradley 彬彬有禮地感謝 Milo 一家人的熱情招待，並相約下週末在公園再見。這場溫馨的聚會讓友情更加深厚！",
+          questions: [
+            {
+              question: "好朋友 Bradley 是在什麼時間來到 Milo 家做客的？",
+              answer: "週日的午後",
+              options: ["週日的午後", "週一的清晨", "深夜時分"]
+            },
+            {
+              question: "Milo 和 Bradley 在客廳裡一起合作搭建了什麼？",
+              answer: "一座堅固的城堡",
+              options: ["一座堅固的城堡", "一艘巨大木船", "一條長長的火車軌道"]
+            },
+            {
+              question: "媽媽為孩子們端出了什麼美味的茶點？",
+              answer: "草莓鬆餅和冰鎮果汁",
+              options: ["草莓鬆餅和冰鎮果汁", "熱騰騰的白粥", "苦苦的黑巧克力"]
+            },
+            {
+              question: "孩子們圍坐在桌旁一邊品嚐點心，一邊做什麼？",
+              answer: "暢談校園裡的歡樂時光",
+              options: ["暢談校園裡的歡樂時光", "安靜地低頭睡覺", "埋頭寫數學作業"]
+            },
+            {
+              question: "臨別時，Bradley 展現了怎樣的舉止？",
+              answer: "彬彬有禮地感謝招待",
+              options: ["彬彬有禮地感謝招待", "生氣地轉身就跑", "默默不說一句話"]
+            }
+          ]
+        }
+      },
+      {
+        levelId: "milo_lvl_01",
+        date: "2026-10-05",
+        theme: "深海神殿探險",
+        recognition: [
+          {
+            sentence: "勇敢的 Milo 駕駛探險船，在遼闊的大海上［  ］行。",
+            answer: "航",
+            options: ["航", "船", "行", "舟"],
+            hint: "由「舟」和「亢」組成，指船在水上行走",
+            socraticHint: "「航」的左邊是「舟」（小船），右邊是「亢」，合起來就是船在水面航行！"
+          },
+          {
+            sentence: "他戴上水肺呼吸頭盔，敏捷地［  ］入幽暗的深海神殿。",
+            answer: "潛",
+            options: ["潛", "沉", "游", "浮"],
+            hint: "三點水旁，指隱入水面下方",
+            socraticHint: "「潛」字有三點水，意思是深入水底下，不要和浮在水面的「浮」搞混囉！"
+          },
+          {
+            sentence: "傍晚的大海退［  ］了，沙灘上留下許多閃閃發光的小海星。",
+            answer: "潮",
+            options: ["潮", "水", "浪", "海"],
+            hint: "海水受引力定時漲落的現象",
+            socraticHint: "「潮」是由三點水和「朝」組成，早晨漲水叫潮，傍晚退去也與潮水有關。"
+          },
+          {
+            sentence: "在古老神殿的最底層，藏著滿滿發光的綠［  ］石箱。",
+            answer: "寶",
+            options: ["寶", "玉", "石", "貝"],
+            hint: "寶蓋頭，底下有玉與貝，代表珍貴的財富",
+            socraticHint: "「寶」上面是寶蓋頭（屋子），裡面藏著玉和貝（古時貝殼是錢幣），合起來就是珍寶！"
+          },
+          {
+            sentence: "木船輕輕地漂［  ］在水面上，隨著海風微微起伏。",
+            answer: "浮",
+            options: ["浮", "游", "沉", "洗"],
+            hint: "浮在水面上，與「沉」相反",
+            socraticHint: "「浮」是三點水旁加一個「孚」，指物體停留在水面之上不沉下去。"
+          }
+        ],
+        handwriting: [
+          {
+            char: "航",
+            pinyin: "háng",
+            strokes: 10,
+            radical: "舟字旁",
+            words: ["航海", "航空", "引航", "導航"]
+          },
+          {
+            char: "潛",
+            pinyin: "qián",
+            strokes: 15,
+            radical: "水部 (氵)",
+            words: ["潛水", "潛伏", "潛力", "深潛"]
+          },
+          {
+            char: "潮",
+            pinyin: "cháo",
+            strokes: 15,
+            radical: "水部 (氵)",
+            words: ["潮水", "漲潮", "潮流", "風潮"]
+          },
+          {
+            char: "寶",
+            pinyin: "bǎo",
+            strokes: 19,
+            radical: "宀部 (寶蓋頭)",
+            words: ["寶貝", "寶石", "寶藏", "國寶"]
+          }
+        ],
+        story: {
+          title: "Milo 的深海奇航記",
+          content: "清晨陽光穿透薄霧，Milo 帶著心愛的地圖來到蔚藍的海灣。他駕駛著木船向深海神殿啟航，海面上浪花朵朵，兩隻調皮的海豚躍出水面為木船引路。潛入神殿中心後，Milo 找到了藏在海綿密室中的古老寶箱。當寶箱打開時，璀璨的綠寶石光芒照亮了整座水下宮殿。這真是一次令人難忘的深海奇航！",
+          questions: [
+            {
+              question: "誰在船頭躍出水面為 Milo 引路？",
+              answer: "兩隻調皮的海豚",
+              options: ["兩隻調皮的海豚", "一條巨大的鯨魚", "一群發光水母"]
+            },
+            {
+              question: "Milo 在神殿中心的哪裡發現了古老寶箱？",
+              answer: "海綿密室中",
+              options: ["海綿密室中", "珊瑚礁頂端", "沉船甲板上"]
+            },
+            {
+              question: "打開寶箱後，什麼光芒照亮了水下宮殿？",
+              answer: "璀璨的綠寶石光芒",
+              options: ["璀璨的綠寶石光芒", "金黃色的陽光", "熊熊燃燒的火焰"]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  ollie: {
+    childName: "Ollie",
+    grade: "基礎 (Ollie)",
+    levels: [
+      {
+        levelId: "ollie_lvl_02",
+        date: "2026-10-06",
+        theme: "Bradley 來家裡玩",
+        recognition: [
+          {
+            sentence: "門鈴丁咚響，Ollie 快步跑去開［  ］，熱情招呼好朋友 Bradley。",
+            answer: "門",
+            options: ["門", "窗", "牆", "房"],
+            hint: "象形字，進出房屋的大門",
+            socraticHint: "「門」的樣子就像兩扇敞開的大門，進出房間都要經過門喔！"
+          },
+          {
+            sentence: "Bradley 是 Ollie 最要好的朋［  ］，兩人一見面就開心地笑個不停。",
+            answer: "友",
+            options: ["友", "有", "右", "又"],
+            hint: "朋友的友",
+            socraticHint: "「友」是兩隻手握在一起的意思，表示好朋友團結友好！"
+          },
+          {
+            sentence: "大家［  ］心地坐在軟軟的地毯上，把玩具箱裡的積木全部倒了出來。",
+            answer: "開",
+            options: ["開", "關", "閉", "升"],
+            hint: "開心的開",
+            socraticHint: "「開」表示展開、打開，心情舒展就是開開心心！"
+          },
+          {
+            sentence: "看到 Bradley 喜歡小恐龍，Ollie 大方地把最愛的暴龍模型［  ］給他一起玩。",
+            answer: "分",
+            options: ["分", "刀", "八", "力"],
+            hint: "分享的分",
+            socraticHint: "「分」由「八」和「刀」組成，表示把好東西分給大家一同分享。"
+          },
+          {
+            sentence: "房間裡充滿了歡［  ］的笑聲，大家玩得滿頭大汗也捨不得停下來。",
+            answer: "樂",
+            options: ["樂", "東", "車", "果"],
+            hint: "快樂的樂",
+            socraticHint: "「樂」指歡樂、快樂，和好朋友在一起最感到快樂了！"
+          }
+        ],
+        handwriting: [
+          {
+            char: "門",
+            pinyin: "mén",
+            strokes: 8,
+            radical: "門部",
+            words: ["大門", "開門", "門口", "家門"]
+          },
+          {
+            char: "友",
+            pinyin: "yǒu",
+            strokes: 4,
+            radical: "又部",
+            words: ["朋友", "友好", "好友", "校友"]
+          },
+          {
+            char: "開",
+            pinyin: "kāi",
+            strokes: 12,
+            radical: "門部",
+            words: ["開心", "開門", "開學", "走開"]
+          },
+          {
+            char: "分",
+            pinyin: "fēn",
+            strokes: 4,
+            radical: "刀部",
+            words: ["分享", "分開", "百分", "分數"]
+          },
+          {
+            char: "樂",
+            pinyin: "lè",
+            strokes: 15,
+            radical: "木部",
+            words: ["快樂", "歡樂", "音樂", "樂意"]
+          }
+        ],
+        story: {
+          title: "Bradley 來 Ollie 家玩",
+          content: "今天家裡來了一位特別的客人，他就是 Ollie 的好朋友 Bradley。門鈴響起時，Ollie 開心地跳了起來，主動跑去開門迎接他。兩人坐在客廳軟綿綿的地毯上，開心地搭建小火車鐵軌，還一起玩了拼圖遊戲。媽媽端來了香脆的小餅乾，Ollie 主動拿給 Bradley 分享。屋子裡到處都是他們歡樂的笑聲。天色漸漸變暗了，Bradley 要回家了，兩個好朋友互相揮手道別，相約下次再一起玩。今天真是無比充實又快樂的一天！",
+          questions: [
+            {
+              question: "今天來到 Ollie 家做客的好朋友是誰？",
+              answer: "Bradley",
+              options: ["Bradley", "小花貓", "隔壁的叔叔"]
+            },
+            {
+              question: "門鈴響起時，Ollie 的反應是怎樣的？",
+              answer: "開心地跳起來去開門",
+              options: ["開心地跳起來去開門", "害怕地躲在沙發後", "轉頭回房間睡覺"]
+            },
+            {
+              question: "Ollie 和 Bradley 在客廳地毯上一起玩了什麼？",
+              answer: "小火車鐵軌和拼圖遊戲",
+              options: ["小火車鐵軌和拼圖遊戲", "打水仗和踢足球", "看電視玩手機"]
+            },
+            {
+              question: "媽媽端來小餅乾時，Ollie 是怎麼做的？",
+              answer: "主動拿給 Bradley 分享",
+              options: ["主動拿給 Bradley 分享", "一個人全部吃光", "把餅乾藏了起來"]
+            },
+            {
+              question: "臨別前，Ollie 和 Bradley 互相做了什麼約定？",
+              answer: "相約下次再一起玩",
+              options: ["相約下次再一起玩", "再也不一起玩了", "明天去買新玩具"]
+            }
+          ]
+        }
+      },
+      {
+        levelId: "ollie_lvl_01",
+        date: "2026-10-05",
+        theme: "陽光公園歡樂跑",
+        recognition: [
+          {
+            sentence: "清晨陽光明媚，Ollie 和好朋友一起在公園步道上歡快地［  ］步。",
+            answer: "跑",
+            options: ["跑", "跳", "行", "走"],
+            hint: "足字旁，指雙腳快速邁進",
+            socraticHint: "「跑」的左邊是「足」（腳），右邊是「包」，表示用雙腳飛快奔馳！"
+          },
+          {
+            sentence: "大家邁開大［  ］，迎著清涼的晨風向前衝刺。",
+            answer: "步",
+            options: ["步", "腳", "腿", "手"],
+            hint: "腳步行走的步子",
+            socraticHint: "「步」表示走路時腳掌前後邁出的距離，比如腳步、跑步。"
+          },
+          {
+            sentence: "跑完步後，我們走進商店挑選了最愛的［  ］克力甜點。",
+            answer: "巧",
+            options: ["巧", "切", "卡", "功"],
+            hint: "巧克力的「巧」",
+            socraticHint: "「巧」字工整好記，左邊是「工」，右邊順勢折下，是巧克力專用的字喔！"
+          },
+          {
+            sentence: "冰涼香甜的巧克力牛［  ］，喝下去讓人感到精神百倍！",
+            answer: "奶",
+            options: ["奶", "水", "茶", "湯"],
+            hint: "牛奶的「奶」",
+            socraticHint: "「奶」是女字旁，牛奶、奶奶都是這個字！"
+          },
+          {
+            sentence: "運動流了很多汗，大家拿起水壺咕嘟咕嘟地［  ］了起來。",
+            answer: "喝",
+            options: ["喝", "吃", "吐", "嚼"],
+            hint: "口字旁，把液體吞入腹中",
+            socraticHint: "喝水要張開嘴巴，所以「喝」的左邊是一個「口」字旁！"
+          }
+        ],
+        handwriting: [
+          {
+            char: "跑",
+            pinyin: "pǎo",
+            strokes: 12,
+            radical: "足部",
+            words: ["跑步", "快跑", "奔跑", "賽跑"]
+          },
+          {
+            char: "步",
+            pinyin: "bù",
+            strokes: 7,
+            radical: "止部",
+            words: ["跑步", "腳步", "大步", "散步"]
+          },
+          {
+            char: "巧",
+            pinyin: "qiǎo",
+            strokes: 5,
+            radical: "工部",
+            words: ["巧克力", "巧妙", "巧手", "乖巧"]
+          },
+          {
+            char: "奶",
+            pinyin: "nǎi",
+            strokes: 5,
+            radical: "女部",
+            words: ["牛奶", "鮮奶", "奶奶", "羊奶"]
+          }
+        ],
+        story: {
+          title: "Ollie 的晨光運動日記",
+          content: "今天是一個晴朗的好天氣，Ollie 一大早就換上了漂亮的運動鞋。他與好朋友們一起來到綠意盎然的大公園，大家排好隊伍，跟隨哨聲邁開大步向前奔跑。微風在耳邊吹過，大家笑得好開心。跑步結束後，Ollie 喝了一大杯冰涼甜美的巧克力奶，整個人充滿了活力。運動真是一件無比快樂的事情！",
+          questions: [
+            {
+              question: "今天的天氣是怎樣的？",
+              answer: "晴朗的好天氣",
+              options: ["晴朗的好天氣", "傾盆大雨", "漫天大雪"]
+            },
+            {
+              question: "Ollie 和好朋友在哪裡邁開大步奔跑？",
+              answer: "綠意盎然的大公園",
+              options: ["綠意盎然的大公園", "熱鬧的超級市場", "幽暗的地下室"]
+            },
+            {
+              question: "跑步結束後，Ollie 喝了什麼美味的飲品？",
+              answer: "冰涼甜美的巧克力奶",
+              options: ["冰涼甜美的巧克力奶", "熱騰騰的濃湯", "微苦的黑咖啡"]
+            }
+          ]
+        }
+      }
+    ]
+  }
+};
+
+/**
+ * Chinese Game 2.0 - Data Adapter
+ * Bridges the frontend engine with Google Sheets / Apps Script Web App and local caching.
+ * Hardened with safeStorage to prevent DOMException crashes in restricted storage runtimes.
+ */
+
+(function(window) {
+  'use strict';
+
+  const DEFAULT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwn7Lf8a2x0U-EHnLb5e5uMtIVtfSRsd_VZla7IbFxLpYFzq8u-A2YUrimdLGtywPOd/exec';
+
+  const memoryStore = {};
+  const safeStorage = {
+    getItem(key, fallback = null) {
+      try {
+        const val = localStorage.getItem(key);
+        return val !== null ? val : (memoryStore[key] !== undefined ? memoryStore[key] : fallback);
+      } catch (e) {
+        return memoryStore[key] !== undefined ? memoryStore[key] : fallback;
+      }
+    },
+    setItem(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch (e) {
+        memoryStore[key] = String(value);
+      }
+    }
+  };
+
+  class DataAdapter {
+    constructor() {
+      this.webAppUrl = safeStorage.getItem('cg_webapp_url', DEFAULT_WEB_APP_URL);
+    }
+
+    setWebAppUrl(url) {
+      if (url) {
+        this.webAppUrl = url.trim();
+        safeStorage.setItem('cg_webapp_url', this.webAppUrl);
+      }
+    }
+
+    getLevels(child) {
+      const childKey = (child || 'milo').toLowerCase();
+      try {
+        const cached = safeStorage.getItem(`cg_cloud_bank_${childKey}`);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && Array.isArray(parsed.levels) && parsed.levels.length > 0) {
+            return parsed.levels;
+          }
+        }
+      } catch (e) {
+        console.warn('Failed reading cloud cache, using default banks:', e);
+      }
+
+      // Fallback to default hardcoded bank
+      if (window.DEFAULT_BANKS && window.DEFAULT_BANKS[childKey]) {
+        return window.DEFAULT_BANKS[childKey].levels || [];
+      }
+      return [];
+    }
+
+    async fetchCloudQuestions(child, onSuccess, onError) {
+      const childKey = (child || 'milo').toLowerCase();
+      if (!this.webAppUrl) {
+        if (onError) onError('No WebApp URL configured');
+        return;
+      }
+
+      const fetchUrl = `${this.webAppUrl}?action=getQuestions&child=${childKey}&t=${Date.now()}`;
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+        const resp = await fetch(fetchUrl, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data && data.levels && data.levels.length > 0) {
+            safeStorage.setItem(`cg_cloud_bank_${childKey}`, JSON.stringify(data));
+            if (onSuccess) onSuccess(data.levels);
+            return;
+          }
+        }
+        throw new Error('Invalid response structure');
+      } catch (err) {
+        console.warn('Direct fetch failed, falling back to JSONP:', err);
+        this.fetchWithJSONP(childKey, onSuccess, onError);
+      }
+    }
+
+    fetchWithJSONP(childKey, onSuccess, onError) {
+      const cbName = `cg_cb_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const script = document.createElement('script');
+
+      let timer = setTimeout(() => {
+        cleanup();
+        if (onError) onError('JSONP Timeout');
+      }, 7000);
+
+      const cleanup = () => {
+        if (timer) clearTimeout(timer);
+        delete window[cbName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
+
+      window[cbName] = (data) => {
+        cleanup();
+        if (data && data.levels && data.levels.length > 0) {
+          safeStorage.setItem(`cg_cloud_bank_${childKey}`, JSON.stringify(data));
+          if (onSuccess) onSuccess(data.levels);
+        } else if (onError) {
+          const detail = (data && (data.message || data.error)) ? (data.message || JSON.stringify(data.error)) : 'Empty levels from JSONP';
+          onError(detail);
+        }
+      };
+
+      script.src = `${this.webAppUrl}?action=getQuestions&child=${childKey}&callback=${cbName}&t=${Date.now()}`;
+      script.onerror = () => {
+        cleanup();
+        if (onError) onError('JSONP network error');
+      };
+      document.head.appendChild(script);
+    }
+
+    logRecord(record) {
+      const queue = this.getOfflineQueue();
+      queue.push(record);
+      this.saveOfflineQueue(queue);
+
+      this.flushOfflineQueue();
+    }
+
+    getOfflineQueue() {
+      try {
+        const val = safeStorage.getItem('cg_offline_records');
+        return val ? JSON.parse(val) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    saveOfflineQueue(queue) {
+      try {
+        safeStorage.setItem('cg_offline_records', JSON.stringify(queue));
+      } catch (e) {}
+    }
+
+    async flushOfflineQueue() {
+      const queue = this.getOfflineQueue();
+      if (!queue.length || !this.webAppUrl) return;
+
+      const recordToSync = queue[0];
+      try {
+        await fetch(this.webAppUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(recordToSync)
+        });
+
+        // Remove sent record
+        queue.shift();
+        this.saveOfflineQueue(queue);
+
+        // Continue sending if more exist
+        if (queue.length > 0) {
+          setTimeout(() => this.flushOfflineQueue(), 300);
+        }
+      } catch (e) {
+        console.warn('Offline flush postponed:', e);
+      }
+    }
+  }
+
+  window.DataAdapter = new DataAdapter();
+})(window);
+
+/**
+ * Chinese Game 2.0 - Core Engine
+ * Manages identity, state, audio synthesis, module orchestration, and AI Socratic tutor hooks.
+ * Cumulative scores for Milo and Ollie reset to 0.
+ */
+
+(function(window) {
+  'use strict';
+
+  // Safe localStorage helper with in-memory fallback to prevent DOMException crashes
+  const memoryStore = {};
+  const safeStorage = {
+    getItem(key, fallback = null) {
+      try {
+        const val = localStorage.getItem(key);
+        return val !== null ? val : (memoryStore[key] !== undefined ? memoryStore[key] : fallback);
+      } catch (e) {
+        return memoryStore[key] !== undefined ? memoryStore[key] : fallback;
+      }
+    },
+    setItem(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch (e) {
+        memoryStore[key] = String(value);
+      }
+    },
+    getJSON(key, fallback = {}) {
+      try {
+        const val = this.getItem(key);
+        return val ? JSON.parse(val) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    },
+    setJSON(key, value) {
+      try {
+        this.setItem(key, JSON.stringify(value));
+      } catch (e) {
+        console.warn('Storage setJSON failed:', e);
+      }
+    }
+  };
+
+  class GameEngine {
+    constructor() {
+      this.modules = {};
+      this.activeModuleId = null;
+      this.currentLevelIndex = 0;
+      this.levels = [];
+      this.activeChild = 'milo';
+      this.speechLang = 'zh-CN'; // Default: Mandarin (普通話)
+      this.audioCtx = null;
+      this.storyFallbackTimer = null;
+
+      // Cumulative score reset to 0 for both kids
+      this.state = {
+        emeralds: { milo: 0, ollie: 0 },
+        hwEarnedCounts: {},
+        records: []
+      };
+
+      this.initIdentity();
+      this.loadSavedState();
+    }
+
+    initIdentity() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const childParam = urlParams.get('child');
+      if (childParam && (childParam.toLowerCase() === 'milo' || childParam.toLowerCase() === 'ollie')) {
+        this.activeChild = childParam.toLowerCase();
+      } else {
+        this.activeChild = safeStorage.getItem('cg_active_child', 'milo');
+      }
+      safeStorage.setItem('cg_active_child', this.activeChild);
+
+      // Force emeralds reset to 0 on launch if not explicitly set
+      if (!safeStorage.getItem('cg_emeralds_v2_reset')) {
+        this.state.emeralds = { milo: 0, ollie: 0 };
+        safeStorage.setJSON('cg_emeralds', { milo: 0, ollie: 0 });
+        safeStorage.setItem('cg_emeralds_v2_reset', 'true');
+      }
+    }
+
+    setChild(childKey) {
+      if (childKey !== 'milo' && childKey !== 'ollie') return;
+      if (this.activeModuleId && this.modules[this.activeModuleId]?.cleanup) {
+        this.modules[this.activeModuleId].cleanup();
+      }
+      this.cancelSpeech();
+      this.hideSocraticHint();
+
+      this.activeChild = childKey;
+      safeStorage.setItem('cg_active_child', childKey);
+      this.updateHUD();
+      if (window.DataAdapter) {
+        this.loadLevels(window.DataAdapter.getLevels(this.activeChild));
+      }
+    }
+
+    toggleSpeechDialect() {
+      if (this.speechLang === 'zh-CN') {
+        this.speechLang = 'zh-HK'; // Cantonese
+      } else {
+        this.speechLang = 'zh-CN'; // Mandarin
+      }
+      safeStorage.setItem('cg_speech_lang', this.speechLang);
+      this.cancelSpeech();
+      this.updateHUD();
+      this.playTone(523, 0.1);
+      return this.speechLang;
+    }
+
+    getSpeechDialectLabel() {
+      return this.speechLang === 'zh-CN' ? '🗣️ 普通話' : '🗣️ 廣東話';
+    }
+
+    loadSavedState() {
+      this.state.emeralds = safeStorage.getJSON('cg_emeralds', { milo: 0, ollie: 0 });
+      this.state.hwEarnedCounts = safeStorage.getJSON('cg_hw_caps', {});
+      this.speechLang = safeStorage.getItem('cg_speech_lang', 'zh-CN');
+    }
+
+    saveState() {
+      safeStorage.setJSON('cg_emeralds', this.state.emeralds);
+      safeStorage.setJSON('cg_hw_caps', this.state.hwEarnedCounts);
+    }
+
+    addEmeralds(count) {
+      if (!this.state.emeralds[this.activeChild]) {
+        this.state.emeralds[this.activeChild] = 0;
+      }
+      this.state.emeralds[this.activeChild] += count;
+      this.saveState();
+      this.updateHUD();
+      this.playRewardChime();
+    }
+
+    // Audio Web Audio API synthesizer for instant zero-dependency sound effects
+    initAudio() {
+      if (!this.audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) this.audioCtx = new AudioContext();
+      }
+      if (this.audioCtx && this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+    }
+
+    playTone(freq, duration, type = 'sine') {
+      try {
+        this.initAudio();
+        if (!this.audioCtx) return;
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + duration);
+      } catch (e) {
+        // Audio playback error handled silently
+      }
+    }
+
+    playSuccessSound() {
+      this.playTone(523.25, 0.15); // C5
+      setTimeout(() => this.playTone(659.25, 0.2), 120); // E5
+    }
+
+    playRewardChime() {
+      this.playTone(587.33, 0.1); // D5
+      setTimeout(() => this.playTone(880.00, 0.25), 100); // A5
+    }
+
+    playErrorSound() {
+      this.playTone(220, 0.25, 'sawtooth');
+    }
+
+    // Speech synthesis wrapper with cancel protection
+    cancelSpeech() {
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+        } catch (e) {}
+      }
+      if (this.storyFallbackTimer) {
+        clearInterval(this.storyFallbackTimer);
+        this.storyFallbackTimer = null;
+      }
+    }
+
+    speakText(text, onEnd) {
+      if (!('speechSynthesis' in window)) {
+        if (onEnd) onEnd();
+        return;
+      }
+      this.cancelSpeech();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = this.speechLang;
+      utterance.rate = 0.85;
+
+      let hasFinished = false;
+      const finish = () => {
+        if (!hasFinished) {
+          hasFinished = true;
+          if (onEnd) onEnd();
+        }
+      };
+
+      utterance.onend = finish;
+      utterance.onerror = finish;
+
+      // Fallback safety timeout if mobile browser drops onend
+      const estDuration = Math.max(text.length * 360 + 1200, 2500);
+      setTimeout(finish, estDuration);
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Module Registration & Switching
+    registerModule(id, moduleInstance) {
+      this.modules[id] = moduleInstance;
+      moduleInstance.engine = this;
+    }
+
+    switchModule(id) {
+      if (!this.modules[id]) return;
+
+      // Clean up previous active module lifecycle
+      if (this.activeModuleId && this.modules[this.activeModuleId]?.cleanup) {
+        this.modules[this.activeModuleId].cleanup();
+      }
+
+      this.cancelSpeech();
+      this.hideSocraticHint();
+
+      this.activeModuleId = id;
+
+      // Update Nav UI
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.module === id);
+      });
+
+      const stage = document.getElementById('game-stage');
+      if (stage) {
+        stage.innerHTML = '';
+        const currentLevel = this.getCurrentLevel();
+        this.modules[id].render(stage, currentLevel);
+      }
+    }
+
+    loadLevels(levels) {
+      this.levels = levels || [];
+      this.currentLevelIndex = 0;
+      this.renderLevelDropdown();
+      if (this.activeModuleId && this.modules[this.activeModuleId]) {
+        this.switchModule(this.activeModuleId);
+      }
+    }
+
+    getCurrentLevel() {
+      if (this.levels.length === 0) return null;
+      return this.levels[this.currentLevelIndex] || this.levels[0];
+    }
+
+    selectLevel(index) {
+      if (this.activeModuleId && this.modules[this.activeModuleId]?.cleanup) {
+        this.modules[this.activeModuleId].cleanup();
+      }
+      this.currentLevelIndex = Math.max(0, Math.min(index, this.levels.length - 1));
+      this.hideSocraticHint();
+      if (this.activeModuleId) {
+        this.switchModule(this.activeModuleId);
+      }
+    }
+
+    renderLevelDropdown() {
+      const select = document.getElementById('level-select');
+      if (!select) return;
+      select.innerHTML = '';
+      this.levels.forEach((lvl, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = `${lvl.date || ''} ${lvl.theme || '關卡' + (idx + 1)}`;
+        select.appendChild(opt);
+      });
+      select.value = this.currentLevelIndex;
+    }
+
+    updateHUD() {
+      const childBtn = document.getElementById('btn-switch-child');
+      if (childBtn) {
+        childBtn.textContent = this.activeChild === 'milo' ? '👦 Milo ⇄' : '👦 Ollie ⇄';
+      }
+      const titleEl = document.getElementById('app-title');
+      if (titleEl) {
+        titleEl.textContent = this.activeChild === 'milo' ? 'Milo 中文島' : 'Ollie 中文島';
+      }
+      const emeraldEl = document.getElementById('emerald-count');
+      if (emeraldEl) {
+        emeraldEl.textContent = `💎 ${this.state.emeralds[this.activeChild] || 0}`;
+      }
+      const langBtn = document.getElementById('btn-toggle-lang');
+      if (langBtn) {
+        langBtn.textContent = this.getSpeechDialectLabel();
+      }
+    }
+
+    // Socratic AI Companion Hook
+    triggerSocraticHint(context) {
+      const drawer = document.getElementById('ai-companion-drawer');
+      if (!drawer) return;
+      
+      const titleEl = drawer.querySelector('.ai-companion-title');
+      const textEl = drawer.querySelector('.ai-companion-text');
+
+      titleEl.textContent = `💡 AI 小幫手的提點 (${context.char || context.target || '字詞啟發'})`;
+      textEl.textContent = context.hint || '試著觀察部首的形狀和意思，想一想它和哪個部首有關聯喔！';
+
+      drawer.style.display = 'flex';
+      this.playTone(440, 0.15); // Friendly chime
+    }
+
+    hideSocraticHint() {
+      const drawer = document.getElementById('ai-companion-drawer');
+      if (drawer) drawer.style.display = 'none';
+    }
+
+    // Answer logging to Google Sheets via DataAdapter
+    recordAnswer(record) {
+      const fullRecord = {
+        timestamp: new Date().toLocaleString('zh-HK', { timeZone: 'Asia/Hong_Kong' }),
+        child: this.activeChild === 'milo' ? 'Milo' : 'Ollie',
+        levelId: this.getCurrentLevel()?.levelId || 'lvl',
+        ...record
+      };
+      if (window.DataAdapter) {
+        window.DataAdapter.logRecord(fullRecord);
+      }
+    }
+  }
+
+  window.GameEngine = GameEngine;
+})(window);
+
+/**
+ * Module 1: 礦洞選字 (Word Recognition & Sentence Fill-in)
+ * Pluggable activity module.
+ * Enhanced with synchronized real-time karaoke highlighting for prompt & options read-aloud.
+ */
+
+(function(window) {
+  'use strict';
+
+  class RecognitionModule {
+    constructor() {
+      this.currentIndex = 0;
+      this.questions = [];
+      this.attempts = 0;
+      this.isProcessing = false;
+      this.isReadingPrompt = false;
+      this.promptFallbackTimer = null;
+      this.confirmFallbackTimer = null;
+    }
+
+    render(container, levelData) {
+      this.cleanup();
+      this.container = container;
+      this.questions = levelData?.recognition || [];
+      this.currentIndex = 0;
+      this.renderQuestion();
+    }
+
+    cleanup() {
+      this.stopQuestionRead();
+      if (this.confirmFallbackTimer) {
+        clearInterval(this.confirmFallbackTimer);
+        this.confirmFallbackTimer = null;
+      }
+      this.clearAllHighlights();
+      this.isProcessing = false;
+    }
+
+    clearAllHighlights() {
+      const els = document.querySelectorAll('.story-highlight');
+      els.forEach(el => el.classList.remove('story-highlight'));
+    }
+
+    renderQuestion() {
+      if (this.currentIndex >= this.questions.length) {
+        this.renderCompletion();
+        return;
+      }
+
+      this.cleanup();
+      this.attempts = 0;
+      this.isProcessing = false;
+      this.isReadingPrompt = false;
+      const q = this.questions[this.currentIndex];
+
+      // Shuffle options and guarantee answer is randomized across positions
+      const options = [...q.options];
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+
+      // Sentence with target blank and wrapped character spans
+      let sentenceHtml = '';
+      let charIdx = 0;
+      const blankIndex = q.sentence.indexOf('［  ］');
+
+      if (blankIndex !== -1) {
+        const before = q.sentence.slice(0, blankIndex);
+        const after = q.sentence.slice(blankIndex + 4);
+        for (const ch of before) {
+          sentenceHtml += `<span id="rec-char-${charIdx}" class="story-char-span">${ch}</span>`;
+          charIdx++;
+        }
+        sentenceHtml += `<span id="target-blank" class="target-blank">？</span>`;
+        for (const ch of after) {
+          sentenceHtml += `<span id="rec-char-${charIdx}" class="story-char-span">${ch}</span>`;
+          charIdx++;
+        }
+      } else {
+        for (const ch of q.sentence) {
+          sentenceHtml += `<span id="rec-char-${charIdx}" class="story-char-span">${ch}</span>`;
+          charIdx++;
+        }
+      }
+
+      this.container.innerHTML = `
+        <div class="game-module-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <span class="hud-badge" style="font-size:0.95rem;">⛏️ 礦洞選字 第 ${this.currentIndex + 1} / ${this.questions.length} 題</span>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <span style="font-size:0.85rem; color:#555;">提示: ${q.hint || '請選出正確的字'}</span>
+              <button class="hud-btn" id="btn-read-rec-q" style="font-size:0.85rem; padding:4px 8px;">🔊 朗讀題目與選項</button>
+              <button class="hud-btn" id="btn-stop-rec-q" style="font-size:0.85rem; padding:4px 8px; display:none;">⏹️ 停止</button>
+            </div>
+          </div>
+
+          <div class="sentence-container" id="sentence-box">
+            ${sentenceHtml}
+          </div>
+
+          <div class="options-grid" id="options-grid">
+            ${options.map((opt, oIdx) => `
+              <button class="option-btn" id="rec-opt-${oIdx}" data-val="${opt}">${opt}</button>
+            `).join('')}
+          </div>
+
+          <div id="ai-companion-drawer" class="ai-companion-drawer" style="display:none;">
+            <div class="ai-companion-avatar">🦉</div>
+            <div class="ai-companion-body">
+              <div class="ai-companion-title">AI 小幫手提點</div>
+              <div class="ai-companion-text"></div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Read question & options audio button
+      const readBtn = document.getElementById('btn-read-rec-q');
+      const stopBtn = document.getElementById('btn-stop-rec-q');
+
+      readBtn.addEventListener('click', () => {
+        this.startQuestionRead(q, options, readBtn, stopBtn);
+      });
+
+      stopBtn.addEventListener('click', () => {
+        this.stopQuestionRead(readBtn, stopBtn);
+      });
+
+      // Bind option button events
+      const btns = this.container.querySelectorAll('.option-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.stopQuestionRead(readBtn, stopBtn);
+          this.handleAnswer(btn.dataset.val, btn, q);
+        });
+      });
+    }
+
+    startQuestionRead(q, options, readBtn, stopBtn) {
+      if (!('speechSynthesis' in window)) return;
+      this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
+      this.isReadingPrompt = true;
+      if (readBtn) readBtn.style.display = 'none';
+      if (stopBtn) stopBtn.style.display = 'inline-block';
+
+      // Build spoken text and character index map
+      let spokenText = '';
+      const spanMap = [];
+      let cIdx = 0;
+      const blankIndex = q.sentence.indexOf('［  ］');
+
+      if (blankIndex !== -1) {
+        const before = q.sentence.slice(0, blankIndex);
+        const after = q.sentence.slice(blankIndex + 4);
+        for (const ch of before) {
+          spokenText += ch;
+          spanMap.push(`rec-char-${cIdx}`);
+          cIdx++;
+        }
+        // Blank spoken as '什麼'
+        spokenText += '什麼';
+        spanMap.push('target-blank');
+        spanMap.push('target-blank');
+        for (const ch of after) {
+          spokenText += ch;
+          spanMap.push(`rec-char-${cIdx}`);
+          cIdx++;
+        }
+      } else {
+        for (const ch of q.sentence) {
+          spokenText += ch;
+          spanMap.push(`rec-char-${cIdx}`);
+          cIdx++;
+        }
+      }
+
+      spokenText += '。選項有：';
+      for (let i = 0; i < 5; i++) spanMap.push(null);
+
+      options.forEach((opt, oIdx) => {
+        if (oIdx > 0) {
+          spokenText += '、';
+          spanMap.push(null);
+        }
+        for (const ch of opt) {
+          spokenText += ch;
+          spanMap.push(`rec-opt-${oIdx}`);
+        }
+      });
+      spokenText += '。';
+      spanMap.push(null);
+
+      const highlightElement = (targetId) => {
+        this.clearAllHighlights();
+        if (!targetId) return;
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.classList.add('story-highlight');
+          if (el.scrollIntoView) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }
+      };
+
+      const utterance = new SpeechSynthesisUtterance(spokenText);
+      utterance.lang = this.engine.speechLang;
+      utterance.rate = 0.85;
+
+      let boundaryFired = false;
+      let timerIdx = 0;
+
+      utterance.onboundary = (e) => {
+        boundaryFired = true;
+        if (this.promptFallbackTimer) {
+          clearInterval(this.promptFallbackTimer);
+          this.promptFallbackTimer = null;
+        }
+        if (e.charIndex !== undefined && spanMap[e.charIndex] !== undefined) {
+          highlightElement(spanMap[e.charIndex]);
+        }
+      };
+
+      // iOS WebKit Fallback timer
+      this.promptFallbackTimer = setInterval(() => {
+        if (boundaryFired) {
+          clearInterval(this.promptFallbackTimer);
+          return;
+        }
+        if (timerIdx < spanMap.length) {
+          highlightElement(spanMap[timerIdx]);
+          timerIdx++;
+        } else {
+          clearInterval(this.promptFallbackTimer);
+        }
+      }, 310);
+
+      const onFinish = () => {
+        this.stopQuestionRead(readBtn, stopBtn);
+      };
+
+      utterance.onend = onFinish;
+      utterance.onerror = onFinish;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    stopQuestionRead(readBtn, stopBtn) {
+      this.isReadingPrompt = false;
+      if (this.promptFallbackTimer) {
+        clearInterval(this.promptFallbackTimer);
+        this.promptFallbackTimer = null;
+      }
+      this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
+      const rBtn = readBtn || document.getElementById('btn-read-rec-q');
+      const sBtn = stopBtn || document.getElementById('btn-stop-rec-q');
+      if (rBtn) rBtn.style.display = 'inline-block';
+      if (sBtn) sBtn.style.display = 'none';
+    }
+
+    handleAnswer(selected, btnEl, q) {
+      if (this.isProcessing) return;
+
+      this.attempts++;
+      const isCorrect = (selected === q.answer);
+
+      if (isCorrect) {
+        this.isProcessing = true;
+        this.clearAllHighlights();
+        btnEl.classList.add('correct');
+        this.engine.playSuccessSound();
+
+        const blank = document.getElementById('target-blank');
+        if (blank) {
+          blank.textContent = q.answer;
+          blank.style.background = '#a5d6a7';
+          blank.style.borderColor = '#2e7d32';
+        }
+
+        // Award emeralds
+        const emeralds = (this.attempts === 1) ? 1 : 0.5;
+        this.engine.addEmeralds(emeralds);
+
+        // Record answer
+        this.engine.recordAnswer({
+          module: '礦洞選字',
+          question: q.sentence,
+          userAnswer: selected,
+          correctAnswer: q.answer,
+          result: this.attempts === 1 ? '第一次答對' : '第二次答對',
+          attempts: this.attempts,
+          emerald: emeralds,
+          weakTag: '✅ 已掌握'
+        });
+
+        // Speak full completed sentence with karaoke character highlighting
+        this.speakConfirmationSentence(q.sentence, q.answer, () => {
+          setTimeout(() => {
+            this.currentIndex++;
+            this.renderQuestion();
+          }, 800);
+        });
+
+      } else {
+        btnEl.classList.add('wrong');
+        btnEl.disabled = true;
+        this.engine.playErrorSound();
+
+        if (this.attempts >= 2) {
+          this.isProcessing = true;
+          // Trigger Socratic AI Hint on struggle
+          this.engine.triggerSocraticHint({
+            char: q.answer,
+            hint: q.socraticHint || `正確字是「${q.answer}」。注意它的字形與語境：「${q.hint || ''}」！`
+          });
+
+          // Reveal answer after 2 attempts
+          const blank = document.getElementById('target-blank');
+          if (blank) {
+            blank.textContent = q.answer;
+            blank.style.background = '#ffcdd2';
+            blank.style.borderColor = '#c62828';
+          }
+
+          this.engine.recordAnswer({
+            module: '礦洞選字',
+            question: q.sentence,
+            userAnswer: selected,
+            correctAnswer: q.answer,
+            result: '兩次皆錯',
+            attempts: this.attempts,
+            emerald: 0,
+            weakTag: '⚠️ 需加強'
+          });
+
+          setTimeout(() => {
+            this.speakConfirmationSentence(q.sentence, q.answer, () => {
+              setTimeout(() => {
+                this.currentIndex++;
+                this.renderQuestion();
+              }, 800);
+            });
+          }, 1500);
+        }
+      }
+    }
+
+    speakConfirmationSentence(sentenceTemplate, answerChar, onEnd) {
+      if (!('speechSynthesis' in window)) return onEnd && onEnd();
+      this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
+      const fullSentence = sentenceTemplate.replace('［  ］', answerChar);
+      const spanMap = [];
+      let cIdx = 0;
+      const blankIndex = sentenceTemplate.indexOf('［  ］');
+
+      if (blankIndex !== -1) {
+        const before = sentenceTemplate.slice(0, blankIndex);
+        const after = sentenceTemplate.slice(blankIndex + 4);
+        for (const ch of before) {
+          spanMap.push(`rec-char-${cIdx}`);
+          cIdx++;
+        }
+        spanMap.push('target-blank');
+        for (const ch of after) {
+          spanMap.push(`rec-char-${cIdx}`);
+          cIdx++;
+        }
+      } else {
+        for (let i = 0; i < fullSentence.length; i++) {
+          spanMap.push(`rec-char-${i}`);
+        }
+      }
+
+      const highlightElement = (targetId) => {
+        this.clearAllHighlights();
+        if (!targetId) return;
+        const el = document.getElementById(targetId);
+        if (el) el.classList.add('story-highlight');
+      };
+
+      const utterance = new SpeechSynthesisUtterance(fullSentence);
+      utterance.lang = this.engine.speechLang;
+      utterance.rate = 0.85;
+
+      let boundaryFired = false;
+      let timerIdx = 0;
+
+      utterance.onboundary = (e) => {
+        boundaryFired = true;
+        if (this.confirmFallbackTimer) {
+          clearInterval(this.confirmFallbackTimer);
+          this.confirmFallbackTimer = null;
+        }
+        if (e.charIndex !== undefined && spanMap[e.charIndex] !== undefined) {
+          highlightElement(spanMap[e.charIndex]);
+        }
+      };
+
+      this.confirmFallbackTimer = setInterval(() => {
+        if (boundaryFired) {
+          clearInterval(this.confirmFallbackTimer);
+          return;
+        }
+        if (timerIdx < spanMap.length) {
+          highlightElement(spanMap[timerIdx]);
+          timerIdx++;
+        } else {
+          clearInterval(this.confirmFallbackTimer);
+        }
+      }, 310);
+
+      const onFinish = () => {
+        if (this.confirmFallbackTimer) {
+          clearInterval(this.confirmFallbackTimer);
+          this.confirmFallbackTimer = null;
+        }
+        this.clearAllHighlights();
+        if (onEnd) onEnd();
+      };
+
+      utterance.onend = onFinish;
+      utterance.onerror = onFinish;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    renderCompletion() {
+      this.container.innerHTML = `
+        <div class="game-module-card" style="text-align:center; padding: 24px;">
+          <h2 style="font-size:2rem; margin-bottom:12px;">🎉 礦洞選字完成！</h2>
+          <p style="font-size:1.2rem; margin-bottom:16px;">本關卡的選字練習全部完成，綠寶石已存入背包！</p>
+          <button class="hud-btn primary" id="btn-next-module" style="font-size:1.2rem; padding:10px 24px;">
+            前往「合成台練字」⛏️
+          </button>
+        </div>
+      `;
+      document.getElementById('btn-next-module').addEventListener('click', () => {
+        this.engine.switchModule('handwriting');
+      });
+    }
+  }
+
+  window.RecognitionModule = RecognitionModule;
+})(window);
+
+/**
+ * Module 2: 合成台練字 (Handwriting & Stroke Order)
+ * Pluggable activity module with HanziWriter + Offline Canvas fallback & 2-gem cap.
+ * Hardened against zero-stroke gem farming exploits.
+ */
+
+(function(window) {
+  'use strict';
+
+  class HandwritingModule {
+    constructor() {
+      this.currentIndex = 0;
+      this.characters = [];
+      this.currentWriter = null;
+      this.offlineDrawingCtx = null;
+      this.offlineStrokeCount = 0;
+      this.isQuizCompleted = false;
+      this.isTransitioning = false;
+    }
+
+    render(container, levelData) {
+      this.container = container;
+      this.characters = levelData?.handwriting || [];
+      this.currentIndex = 0;
+      this.renderChar();
+    }
+
+    cleanup() {
+      this.isTransitioning = false;
+      if (this.currentWriter) {
+        try {
+          this.currentWriter = null;
+        } catch (e) {}
+      }
+    }
+
+    renderChar() {
+      if (this.currentIndex >= this.characters.length) {
+        this.renderCompletion();
+        return;
+      }
+
+      this.isQuizCompleted = false;
+      this.isTransitioning = false;
+      this.offlineStrokeCount = 0;
+      const cur = this.characters[this.currentIndex];
+      const levelId = this.engine.getCurrentLevel()?.levelId || 'lvl';
+      const capKey = `${levelId}_${cur.char}`;
+      const earnedCount = this.engine.state.hwEarnedCounts[capKey] || 0;
+      const isCapped = earnedCount >= 2;
+
+      this.container.innerHTML = `
+        <div class="game-module-card">
+          <div class="handwriting-meta">
+            <span class="hud-badge" style="font-size:0.95rem;">🔨 合成台練字 第 ${this.currentIndex + 1} / ${this.characters.length} 字</span>
+            <span style="font-size:0.9rem; font-weight:bold; color:${isCapped ? '#7f8c8d' : '#27ae60'};">
+              ${isCapped ? '💎 已獲 2 次獎勵 (自由練習中)' : `💎 本字獎勵: ${earnedCount}/2 次`}
+            </span>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <div class="char-info-box">
+              <h2>${cur.char}</h2>
+              <div style="font-size:0.95rem; font-weight:bold; color:#555;">${cur.pinyin || ''} (${cur.strokes || '?'} 畫)</div>
+            </div>
+            <div style="flex:1; margin-left:14px; font-size:1.05rem; line-height:1.5;">
+              <div><strong>部首/結構：</strong>${cur.radical || '漢字'}</div>
+              <div><strong>常用組詞：</strong>${cur.words ? cur.words.join('、') : ''}</div>
+            </div>
+          </div>
+
+          <div class="handwriting-canvas-wrapper" id="hw-canvas-container"></div>
+
+          <div id="hw-feedback-msg" style="text-align:center; min-height:22px; font-size:0.95rem; font-weight:bold; color:#e67e22;"></div>
+
+          <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:4px;">
+            <button class="hud-btn" id="btn-animate-hw">🎬 示範筆順</button>
+            <button class="hud-btn" id="btn-reset-hw">🔄 重新描紅</button>
+            <button class="hud-btn primary" id="btn-complete-hw">
+              ${isCapped ? '✨ 下一個字' : '✨ 完成本字 (+1 💎)'}
+            </button>
+          </div>
+        </div>
+      `;
+
+      this.initCanvasEngine(cur);
+
+      // Event bindings
+      document.getElementById('btn-animate-hw').addEventListener('click', () => {
+        if (this.currentWriter) {
+          this.currentWriter.animateCharacter();
+          this.engine.speakText(cur.char);
+        } else {
+          this.engine.speakText(cur.char);
+        }
+      });
+
+      document.getElementById('btn-reset-hw').addEventListener('click', () => {
+        this.initCanvasEngine(cur);
+      });
+
+      const completeBtn = document.getElementById('btn-complete-hw');
+      completeBtn.addEventListener('click', () => {
+        this.handleCompleteChar(cur, isCapped, completeBtn);
+      });
+    }
+
+    initCanvasEngine(cur) {
+      const container = document.getElementById('hw-canvas-container');
+      if (!container) return;
+      container.innerHTML = '';
+      const sz = Math.min(340, Math.floor(window.innerWidth * 0.85));
+
+      if (typeof HanziWriter !== 'undefined') {
+        try {
+          this.currentWriter = HanziWriter.create('hw-canvas-container', cur.char, {
+            width: sz,
+            height: sz,
+            padding: sz * 0.06,
+            showOutline: true,
+            strokeAnimationSpeed: 1.2,
+            delayBetweenStrokes: 200,
+            drawingWidth: sz / 18,
+            radicalColor: '#16a085',
+            leniency: 2.2,
+            onCorrectStroke: () => {
+              this.engine.playTone(600, 0.05);
+            },
+            onComplete: () => {
+              this.isQuizCompleted = true;
+              this.engine.playSuccessSound();
+              const feedback = document.getElementById('hw-feedback-msg');
+              if (feedback) feedback.textContent = '🌟 太棒了！筆順描寫完成，請點擊下方完成按鈕！';
+            }
+          });
+          this.currentWriter.quiz();
+          return;
+        } catch (e) {
+          console.warn('HanziWriter init failed, falling back to local canvas:', e);
+        }
+      }
+
+      // Offline HTML5 Canvas Fallback
+      this.setupOfflineCanvas(container, cur.char, sz);
+    }
+
+    setupOfflineCanvas(container, char, sz) {
+      this.currentWriter = null;
+      const canvas = document.createElement('canvas');
+      canvas.width = sz;
+      canvas.height = sz;
+      container.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+      this.offlineDrawingCtx = ctx;
+
+      // Draw rice-grid (米字格)
+      ctx.strokeStyle = '#e0e0e0';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(sz / 2, 0); ctx.lineTo(sz / 2, sz);
+      ctx.moveTo(0, sz / 2); ctx.lineTo(sz, sz / 2);
+      ctx.moveTo(0, 0); ctx.lineTo(sz, sz);
+      ctx.moveTo(sz, 0); ctx.lineTo(0, sz);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw watermark character outline
+      ctx.font = `${sz * 0.75}px 'Kaiti SC', 'STKaiti', serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#f0f0f0';
+      ctx.fillText(char, sz / 2, sz / 2 + 10);
+
+      // Drawing state
+      let isDrawing = false;
+      const getPos = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: (clientX - rect.left) * (canvas.width / rect.width),
+          y: (clientY - rect.top) * (canvas.height / rect.height)
+        };
+      };
+
+      const start = (e) => {
+        e.preventDefault();
+        isDrawing = true;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      };
+
+      const draw = (e) => {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        ctx.strokeStyle = '#1a5fb4';
+        ctx.lineWidth = sz / 20;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+        this.offlineStrokeCount++;
+      };
+
+      const stop = () => { isDrawing = false; };
+
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stop);
+      canvas.addEventListener('touchstart', start, { passive: false });
+      canvas.addEventListener('touchmove', draw, { passive: false });
+      canvas.addEventListener('touchend', stop);
+    }
+
+    handleCompleteChar(cur, isCapped, btnEl) {
+      if (this.isTransitioning) return;
+
+      const feedback = document.getElementById('hw-feedback-msg');
+
+      // Exploitation prevention gate: Must verify valid writing if not capped
+      if (!isCapped) {
+        if (this.currentWriter !== null && !this.isQuizCompleted) {
+          this.engine.playErrorSound();
+          if (feedback) feedback.textContent = '⚠️ 請先依照筆順完成描寫，再點擊領取綠寶石喔！';
+          return;
+        }
+        if (this.currentWriter === null && this.offlineStrokeCount < 5) {
+          this.engine.playErrorSound();
+          if (feedback) feedback.textContent = '⚠️ 請在米字格上認真描寫漢字後再送出喔！';
+          return;
+        }
+      }
+
+      this.isTransitioning = true;
+      btnEl.disabled = true;
+
+      const levelId = this.engine.getCurrentLevel()?.levelId || 'lvl';
+      const capKey = `${levelId}_${cur.char}`;
+      const earnedCount = this.engine.state.hwEarnedCounts[capKey] || 0;
+
+      if (!isCapped) {
+        this.engine.state.hwEarnedCounts[capKey] = earnedCount + 1;
+        this.engine.saveState();
+        this.engine.addEmeralds(1);
+
+        this.engine.recordAnswer({
+          module: '合成台練字',
+          question: `書寫漢字【${cur.char}】`,
+          userAnswer: cur.char,
+          correctAnswer: cur.char,
+          result: '第一次答對',
+          attempts: 1,
+          emerald: 1,
+          weakTag: '✅ 已掌握'
+        });
+      } else {
+        this.engine.playSuccessSound();
+      }
+
+      this.engine.speakText(cur.char, () => {
+        setTimeout(() => {
+          this.currentIndex++;
+          this.renderChar();
+        }, 400);
+      });
+    }
+
+    renderCompletion() {
+      this.container.innerHTML = `
+        <div class="game-module-card" style="text-align:center; padding: 24px;">
+          <h2 style="font-size:2rem; margin-bottom:12px;">🎉 合成台練字完成！</h2>
+          <p style="font-size:1.2rem; margin-bottom:16px;">今日的筆順練習已圓滿達成，字體工整又端正！</p>
+          <button class="hud-btn primary" id="btn-next-module-reading" style="font-size:1.2rem; padding:10px 24px;">
+            前往「村莊冒險日記」📖
+          </button>
+        </div>
+      `;
+      document.getElementById('btn-next-module-reading').addEventListener('click', () => {
+        this.engine.switchModule('reading');
+      });
+    }
+  }
+
+  window.HandwritingModule = HandwritingModule;
+})(window);
+
+/**
+ * Module 3: 村莊冒險日記 (Reading Comprehension & Karaoke Highlighting)
+ * Pluggable activity module.
+ * Enhanced with synchronized real-time karaoke highlighting for story, QA question, and options.
+ */
+
+(function(window) {
+  'use strict';
+
+  class ReadingModule {
+    constructor() {
+      this.storyData = null;
+      this.currentQIndex = 0;
+      this.isReading = false;
+      this.storyFallbackTimer = null;
+      this.qaFallbackTimer = null;
+      this.attempts = 0;
+      this.isProcessing = false;
+      this.isReadingQA = false;
+    }
+
+    render(container, levelData) {
+      this.cleanup();
+      this.container = container;
+      this.storyData = levelData?.story || null;
+      this.currentQIndex = 0;
+      this.isReading = false;
+      this.isProcessing = false;
+      this.isReadingQA = false;
+      this.renderView();
+    }
+
+    cleanup() {
+      if (this.storyFallbackTimer) {
+        clearInterval(this.storyFallbackTimer);
+        this.storyFallbackTimer = null;
+      }
+      if (this.qaFallbackTimer) {
+        clearInterval(this.qaFallbackTimer);
+        this.qaFallbackTimer = null;
+      }
+      this.isReading = false;
+      this.isProcessing = false;
+      this.isReadingQA = false;
+      this.clearAllHighlights();
+    }
+
+    clearAllHighlights() {
+      const highlighted = document.querySelectorAll('.story-highlight');
+      highlighted.forEach(el => el.classList.remove('story-highlight'));
+    }
+
+    renderView() {
+      if (!this.storyData) {
+        this.container.innerHTML = `<div class="game-module-card"><p>本關卡暫無閱讀篇章。</p></div>`;
+        return;
+      }
+
+      const storyText = this.storyData.content || '';
+      const questions = this.storyData.questions || [];
+      const hasQA = questions.length > 0;
+
+      // Wrap each character in span for karaoke highlighting
+      let charIndex = 0;
+      const wrappedStory = storyText.split('').map(ch => {
+        const span = `<span id="story-char-${charIndex}" class="story-char-span">${ch}</span>`;
+        charIndex++;
+        return span;
+      }).join('');
+
+      this.container.innerHTML = `
+        <div class="game-module-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="hud-badge" style="font-size:0.95rem;">📖 ${this.storyData.title || '冒險日記'}</span>
+            <div style="display:flex; gap:6px;">
+              <button class="hud-btn primary" id="btn-read-story">🔊 朗讀故事</button>
+              <button class="hud-btn" id="btn-stop-story" style="display:none;">⏹️ 停止</button>
+            </div>
+          </div>
+
+          <div class="story-box" id="story-text-container">
+            ${wrappedStory}
+          </div>
+
+          <div id="qa-container" style="margin-top:10px;">
+            ${hasQA ? `<div id="qa-active-question"></div>` : `<p style="text-align:center;">閱讀完畢！請點擊上方朗讀跟讀練習。</p>`}
+          </div>
+        </div>
+      `;
+
+      // Story audio buttons
+      const readBtn = document.getElementById('btn-read-story');
+      const stopBtn = document.getElementById('btn-stop-story');
+
+      readBtn.addEventListener('click', () => {
+        this.startKaraokeRead(storyText, readBtn, stopBtn);
+      });
+
+      stopBtn.addEventListener('click', () => {
+        this.stopKaraokeRead(readBtn, stopBtn);
+      });
+
+      if (hasQA) {
+        this.renderQAQuestion(questions);
+      }
+    }
+
+    startKaraokeRead(text, readBtn, stopBtn) {
+      if (!('speechSynthesis' in window)) return;
+      this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
+      this.isReading = true;
+      if (readBtn) readBtn.style.display = 'none';
+      if (stopBtn) stopBtn.style.display = 'inline-block';
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = this.engine.speechLang;
+      utterance.rate = 0.85;
+
+      let boundaryFired = false;
+      let timerIdx = 0;
+
+      const highlightChar = (idx) => {
+        this.clearAllHighlights();
+        const el = document.getElementById(`story-char-${idx}`);
+        if (el) {
+          el.classList.add('story-highlight');
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      };
+
+      utterance.onboundary = (e) => {
+        boundaryFired = true;
+        if (this.storyFallbackTimer) {
+          clearInterval(this.storyFallbackTimer);
+          this.storyFallbackTimer = null;
+        }
+        if (e.charIndex !== undefined) {
+          highlightChar(e.charIndex);
+        }
+      };
+
+      // iOS WebKit Fallback timer
+      this.storyFallbackTimer = setInterval(() => {
+        if (boundaryFired) {
+          clearInterval(this.storyFallbackTimer);
+          return;
+        }
+        if (timerIdx < text.length) {
+          highlightChar(timerIdx);
+          timerIdx++;
+        } else {
+          clearInterval(this.storyFallbackTimer);
+        }
+      }, 310);
+
+      const onFinish = () => {
+        this.stopKaraokeRead(readBtn, stopBtn);
+      };
+
+      utterance.onend = onFinish;
+      utterance.onerror = onFinish;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    stopKaraokeRead(readBtn, stopBtn) {
+      this.isReading = false;
+      if (this.storyFallbackTimer) {
+        clearInterval(this.storyFallbackTimer);
+        this.storyFallbackTimer = null;
+      }
+      this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
+      if (readBtn) readBtn.style.display = 'inline-block';
+      if (stopBtn) stopBtn.style.display = 'none';
+    }
+
+    renderQAQuestion(questions) {
+      const qaContainer = document.getElementById('qa-active-question');
+      if (!qaContainer) return;
+
+      if (this.currentQIndex >= questions.length) {
+        qaContainer.innerHTML = `
+          <div style="text-align:center; padding: 14px; background:#e8f5e9; border:2px solid #4caf50; border-radius:4px;">
+            <h3>🌟 閱讀理解測驗全數通過！</h3>
+            <p style="margin-top:4px;">已精熟掌握故事重點與文意脈絡！</p>
+          </div>
+        `;
+        return;
+      }
+
+      this.attempts = 0;
+      this.isProcessing = false;
+      this.isReadingQA = false;
+      const q = questions[this.currentQIndex];
+
+      // Wrap question characters in spans for karaoke highlighting
+      let qHtml = '';
+      for (let i = 0; i < q.question.length; i++) {
+        qHtml += `<span id="qa-q-char-${i}" class="story-char-span">${q.question[i]}</span>`;
+      }
+
+      // Shuffle options with answer rotation
+      const options = [...q.options];
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+
+      qaContainer.innerHTML = `
+        <div style="background:#f0f0f0; border:2px solid #000; padding:10px; border-radius:4px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+            <div style="font-weight:bold; font-size:1.15rem;">
+              ❓ 問題 ${this.currentQIndex + 1} / ${questions.length}: ${qHtml}
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="hud-btn" id="btn-read-qa-q" style="font-size:0.85rem; padding:4px 8px;">🔊 朗讀問題與選項</button>
+              <button class="hud-btn" id="btn-stop-qa-q" style="font-size:0.85rem; padding:4px 8px; display:none;">⏹️ 停止</button>
+            </div>
+          </div>
+          <div class="options-grid">
+            ${options.map((opt, oIdx) => `
+              <button class="option-btn qa-opt-btn" id="qa-opt-${oIdx}" data-val="${opt}" style="font-size:1.15rem; min-height:50px;">
+                ${opt}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // Read QA audio buttons
+      const readQABtn = document.getElementById('btn-read-qa-q');
+      const stopQABtn = document.getElementById('btn-stop-qa-q');
+
+      readQABtn.addEventListener('click', () => {
+        this.startQAQuestionRead(q, options, readQABtn, stopQABtn);
+      });
+
+      stopQABtn.addEventListener('click', () => {
+        this.stopQAQuestionRead(readQABtn, stopQABtn);
+      });
+
+      qaContainer.querySelectorAll('.qa-opt-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.stopQAQuestionRead(readQABtn, stopQABtn);
+          this.handleQAAnswer(btn.dataset.val, btn, q, questions);
+        });
+      });
+    }
+
+    startQAQuestionRead(q, options, readBtn, stopBtn) {
+      if (!('speechSynthesis' in window)) return;
+      this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
+      this.isReadingQA = true;
+      if (readBtn) readBtn.style.display = 'none';
+      if (stopBtn) stopBtn.style.display = 'inline-block';
+
+      // Build spoken text and character index map
+      let spokenText = '';
+      const spanMap = [];
+
+      for (let i = 0; i < q.question.length; i++) {
+        spokenText += q.question[i];
+        spanMap.push(`qa-q-char-${i}`);
+      }
+
+      spokenText += '。選項有：';
+      for (let i = 0; i < 5; i++) spanMap.push(null);
+
+      options.forEach((opt, oIdx) => {
+        if (oIdx > 0) {
+          spokenText += '；';
+          spanMap.push(null);
+        }
+        for (const ch of opt) {
+          spokenText += ch;
+          spanMap.push(`qa-opt-${oIdx}`);
+        }
+      });
+      spokenText += '。';
+      spanMap.push(null);
+
+      const highlightElement = (targetId) => {
+        this.clearAllHighlights();
+        if (!targetId) return;
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.classList.add('story-highlight');
+          if (el.scrollIntoView) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }
+      };
+
+      const utterance = new SpeechSynthesisUtterance(spokenText);
+      utterance.lang = this.engine.speechLang;
+      utterance.rate = 0.85;
+
+      let boundaryFired = false;
+      let timerIdx = 0;
+
+      utterance.onboundary = (e) => {
+        boundaryFired = true;
+        if (this.qaFallbackTimer) {
+          clearInterval(this.qaFallbackTimer);
+          this.qaFallbackTimer = null;
+        }
+        if (e.charIndex !== undefined && spanMap[e.charIndex] !== undefined) {
+          highlightElement(spanMap[e.charIndex]);
+        }
+      };
+
+      // iOS WebKit Fallback timer
+      this.qaFallbackTimer = setInterval(() => {
+        if (boundaryFired) {
+          clearInterval(this.qaFallbackTimer);
+          return;
+        }
+        if (timerIdx < spanMap.length) {
+          highlightElement(spanMap[timerIdx]);
+          timerIdx++;
+        } else {
+          clearInterval(this.qaFallbackTimer);
+        }
+      }, 310);
+
+      const onFinish = () => {
+        this.stopQAQuestionRead(readBtn, stopBtn);
+      };
+
+      utterance.onend = onFinish;
+      utterance.onerror = onFinish;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    stopQAQuestionRead(readBtn, stopBtn) {
+      this.isReadingQA = false;
+      if (this.qaFallbackTimer) {
+        clearInterval(this.qaFallbackTimer);
+        this.qaFallbackTimer = null;
+      }
+      this.engine.cancelSpeech();
+      this.clearAllHighlights();
+
+      const rBtn = readBtn || document.getElementById('btn-read-qa-q');
+      const sBtn = stopBtn || document.getElementById('btn-stop-qa-q');
+      if (rBtn) rBtn.style.display = 'inline-block';
+      if (sBtn) sBtn.style.display = 'none';
+    }
+
+    handleQAAnswer(selected, btnEl, q, questions) {
+      if (this.isProcessing) return;
+
+      this.attempts++;
+      const isCorrect = (selected === q.answer);
+
+      if (isCorrect) {
+        this.isProcessing = true;
+        this.clearAllHighlights();
+        // Disable all buttons immediately to prevent duplicate clicks
+        const allBtns = this.container.querySelectorAll('.qa-opt-btn');
+        allBtns.forEach(b => b.disabled = true);
+
+        btnEl.classList.add('correct');
+        this.engine.playSuccessSound();
+
+        const emeralds = (this.attempts === 1) ? 1 : 0.5;
+        this.engine.addEmeralds(emeralds);
+
+        this.engine.recordAnswer({
+          module: '冒險日記',
+          question: q.question,
+          userAnswer: selected,
+          correctAnswer: q.answer,
+          result: this.attempts === 1 ? '第一次答對' : '第二次答對',
+          attempts: this.attempts,
+          emerald: emeralds,
+          weakTag: '✅ 已掌握'
+        });
+
+        setTimeout(() => {
+          this.currentQIndex++;
+          this.renderQAQuestion(questions);
+        }, 800);
+
+      } else {
+        btnEl.classList.add('wrong');
+        btnEl.disabled = true;
+        this.engine.playErrorSound();
+
+        if (this.attempts >= 2) {
+          this.isProcessing = true;
+          this.clearAllHighlights();
+          const allBtns = this.container.querySelectorAll('.qa-opt-btn');
+          allBtns.forEach(b => b.disabled = true);
+
+          this.engine.triggerSocraticHint({
+            char: '閱讀理解',
+            hint: `答案在故事裡哦！試著重讀故事找出關於「${q.question}」的描寫！`
+          });
+
+          this.engine.recordAnswer({
+            module: '冒險日記',
+            question: q.question,
+            userAnswer: selected,
+            correctAnswer: q.answer,
+            result: '兩次皆錯',
+            attempts: this.attempts,
+            emerald: 0,
+            weakTag: '⚠️ 需加強'
+          });
+
+          setTimeout(() => {
+            this.currentQIndex++;
+            this.renderQAQuestion(questions);
+          }, 1600);
+        }
+      }
+    }
+  }
+
+  window.ReadingModule = ReadingModule;
+})(window);
+
+</script>
+  
+  
+  
+  
+  
 
   <!-- Application Bootstrap -->
   <script>
@@ -129,23 +2677,36 @@
       });
 
       // Cloud Sync Button
-      document.getElementById('btn-sync-cloud').addEventListener('click', () => {
-        const modal = document.getElementById('sync-modal');
-        const msg = document.getElementById('sync-status-msg');
-        modal.classList.add('active');
-        msg.textContent = '正在自 Google Drive / 試算表拉取最新關卡...';
+      const syncModal = document.getElementById('sync-modal');
+      const syncMsg = document.getElementById('sync-status-msg');
+      const webAppInput = document.getElementById('input-webapp-url');
 
+      const triggerSync = () => {
+        syncMsg.textContent = '正在自 Google Drive / 試算表拉取最新關卡...';
         window.DataAdapter.fetchCloudQuestions(engine.activeChild, (newLevels) => {
           engine.loadLevels(newLevels);
-          msg.textContent = `✅ 同步成功！已載入 ${newLevels.length} 個最新關卡。`;
+          syncMsg.textContent = `✅ 同步成功！已載入 ${newLevels.length} 個最新關卡。`;
           window.DataAdapter.flushOfflineQueue();
         }, (err) => {
-          msg.textContent = `ℹ️ 目前使用本機離線題庫 (${err})。作答紀錄已在背景暫存，稍後聯網將自動同步。`;
+          syncMsg.textContent = `ℹ️ 目前使用本機離線題庫 (${err})。作答紀錄已在背景暫存，稍後聯網將自動同步。`;
         });
+      };
+
+      document.getElementById('btn-sync-cloud').addEventListener('click', () => {
+        if (webAppInput) webAppInput.value = window.DataAdapter.webAppUrl || '';
+        syncModal.classList.add('active');
+        triggerSync();
+      });
+
+      document.getElementById('btn-save-webapp-url').addEventListener('click', () => {
+        if (webAppInput && webAppInput.value.trim()) {
+          window.DataAdapter.setWebAppUrl(webAppInput.value.trim());
+          triggerSync();
+        }
       });
 
       document.getElementById('btn-sync-close').addEventListener('click', () => {
-        document.getElementById('sync-modal').classList.remove('active');
+        syncModal.classList.remove('active');
       });
 
       // Parent Emerald Modal
