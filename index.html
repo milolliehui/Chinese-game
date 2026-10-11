@@ -3,87 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Race Master: 中文極速賽車 2.0</title>
+  <title>中文島 - 冒險學習 2.0</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="color-scheme" content="light">
   <link rel="manifest" href="./manifest.json">
   <style>
-/* ==========================================================================
-   Race Master 3D - High-Octane Educational Game Theme & Layout Engine
-   ========================================================================== */
+/* Base layout and structural styles for Educational Game Engine */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  touch-action: manipulation;
-}
-
-:root {
-  --theme-name: "racemaster";
-  
-  /* Backgrounds: Dark Asphalt & Carbon Chassis */
-  --theme-bg: #0c0e14;              /* Deep tarmac black */
-  --theme-panel-bg: #161a24;        /* Dark carbon chassis */
-  --theme-box-bg: #1e2433;          /* Cockpit telemetry card */
-  
-  /* Borders & Radii */
-  --theme-border-color: #2b3345;    /* Titanium seam */
-  --theme-border-width: 2px;
-  --theme-radius: 12px;             /* Aerodynamic curves */
-  --theme-radius-sm: 8px;
-
-  /* Typography */
-  --theme-text: #f0f4fc;            /* Crisp cockpit white */
-  --theme-text-muted: #8e9bb5;      /* Telemetry secondary gray */
-  --theme-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "PingFang HK", "Microsoft YaHei", sans-serif;
-
-  /* High-Octane Neon Accents */
-  --theme-accent: #00e5ff;          /* Nitro Cyan */
-  --theme-trophy: #ffcc00;          /* Podium Gold */
-  --theme-speed: #ff2a5f;           /* Hot Racing Red */
-  --theme-nitro: #00ff66;           /* Turbo Lime Green */
-
-  /* Shadows & Depth */
-  --theme-panel-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --theme-box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-
-  /* Buttons */
-  --theme-btn-bg: #262e40;
-  --theme-btn-color: #ffffff;
-  --theme-btn-shadow: 0 3px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  --theme-btn-primary-bg: #ff2a5f;
-
-  /* HUD & Badges */
-  --theme-badge-bg: #080a0f;
-  --theme-badge-color: #ffcc00;
-
-  /* Navigation Tabs */
-  --theme-tab-inactive-bg: #191e2b;
-  --theme-tab-inactive-color: #8e9bb5;
-  --theme-tab-active-bg: #00e5ff;
-  --theme-tab-active-color: #080a0f;
-
-  /* Option Buttons */
-  --theme-btn-option-bg: #222938;
-  --theme-btn-option-color: #f0f4fc;
-  --theme-btn-option-border: #38435c;
 }
 
 body {
-  font-family: var(--theme-font);
-  background: var(--theme-bg);
-  color: var(--theme-text);
+  font-family: var(--theme-font, -apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Microsoft YaHei", sans-serif);
+  background: var(--theme-bg, #2b2b2b);
+  color: var(--theme-text, #1e1e1e);
   height: 100vh;
   overflow: hidden;
   margin: 0;
   padding: 0;
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 60%),
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 100% 100%, 32px 32px, 32px 32px;
 }
 
 #game-app {
@@ -92,7 +34,7 @@ body {
   height: 100vh;
   max-width: 920px;
   margin: 0 auto;
-  padding: max(env(safe-area-inset-top, 0px) + 12px, 40px) 12px max(env(safe-area-inset-bottom, 0px), 12px) 12px;
+  padding: max(env(safe-area-inset-top, 0px) + 16px, 44px) 12px max(env(safe-area-inset-bottom, 0px), 12px) 12px;
 }
 
 /* Header & HUD */
@@ -101,12 +43,11 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background: var(--theme-panel-bg);
-  border: var(--theme-border-width) solid var(--theme-border-color);
-  box-shadow: var(--theme-panel-shadow);
+  background: var(--theme-panel-bg, #eee);
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-panel-shadow, none);
   margin-bottom: 8px;
-  border-radius: var(--theme-radius);
-  position: relative;
+  border-radius: var(--theme-radius, 0px);
 }
 
 .hud-left, .hud-right {
@@ -116,72 +57,55 @@ body {
 }
 
 .hud-title {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 900;
   letter-spacing: 0.5px;
-  color: var(--theme-accent);
-  text-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
 .hud-badge {
-  background: var(--theme-badge-bg);
-  color: var(--theme-badge-color);
-  font-size: 1.05rem;
-  font-weight: 800;
+  background: var(--theme-badge-bg, #222);
+  color: var(--theme-badge-color, #17dd62);
+  font-size: 1.1rem;
+  font-weight: bold;
   padding: 4px 10px;
-  border: var(--theme-border-width) solid var(--theme-border-color);
-  border-radius: var(--theme-radius-sm);
+  border: var(--theme-border-width, 2px) solid var(--theme-border-color, #000);
+  border-radius: var(--theme-radius-sm, 0px);
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 .hud-btn {
-  background: var(--theme-btn-bg);
-  color: var(--theme-btn-color);
-  font-size: 0.88rem;
-  font-weight: 700;
+  background: var(--theme-btn-bg, #b88746);
+  color: var(--theme-btn-color, #fff);
+  font-size: 0.9rem;
+  font-weight: bold;
   padding: 6px 10px;
-  border: var(--theme-border-width) solid var(--theme-border-color);
-  box-shadow: var(--theme-btn-shadow);
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-btn-shadow, none);
   cursor: pointer;
-  border-radius: var(--theme-radius-sm);
-  transition: transform 0.08s ease, filter 0.08s ease, background 0.12s ease;
-  white-space: nowrap;
+  border-radius: var(--theme-radius-sm, 0px);
+  transition: transform 0.08s ease, filter 0.08s ease;
 }
 
 .hud-btn:active {
-  transform: translate(1px, 2px);
-  filter: brightness(1.15);
+  transform: translate(2px, 2px);
+  filter: brightness(0.92);
 }
 
 .hud-btn.primary {
-  background: var(--theme-btn-primary-bg);
-  border-color: #ff527b;
-  box-shadow: 0 2px 10px rgba(255, 42, 95, 0.4);
+  background: var(--theme-btn-primary-bg, #5c8e32);
 }
 
 /* Level Select in HUD */
 .level-select {
-  font-size: 0.92rem;
-  font-weight: 700;
-  padding: 5px 8px;
-  border: var(--theme-border-width) solid var(--theme-border-color);
-  background: var(--theme-box-bg);
-  color: var(--theme-text);
-  border-radius: var(--theme-radius-sm);
-  max-width: 175px;
-  outline: none;
-  cursor: pointer;
-}
-
-.level-select option {
-  background: #161a24;
-  color: #f0f4fc;
+  font-size: 0.95rem;
+  font-weight: bold;
+  padding: 4px 6px;
+  border: var(--theme-border-width, 2px) solid var(--theme-border-color, #000);
+  background: #fff;
+  border-radius: var(--theme-radius-sm, 0px);
+  max-width: 170px;
 }
 
 /* Tab Navigation */
@@ -193,25 +117,21 @@ body {
 
 .nav-tab {
   flex: 1;
-  padding: 9px 4px;
-  font-size: 0.96rem;
-  font-weight: 800;
-  border: var(--theme-border-width) solid var(--theme-border-color);
-  background: var(--theme-tab-inactive-bg);
-  color: var(--theme-tab-inactive-color);
+  padding: 10px 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  background: var(--theme-tab-inactive-bg, #999);
+  color: var(--theme-tab-inactive-color, #333);
   cursor: pointer;
   text-align: center;
-  border-radius: var(--theme-radius-sm);
-  transition: all 0.15s ease;
-  letter-spacing: 0.3px;
+  border-radius: var(--theme-radius-sm, 0px);
+  transition: background 0.12s ease;
 }
 
 .nav-tab.active {
-  background: var(--theme-tab-active-bg);
-  color: var(--theme-tab-active-color);
-  border-color: var(--theme-accent);
-  box-shadow: 0 0 16px rgba(0, 229, 255, 0.45);
-  transform: translateY(-1px);
+  background: var(--theme-tab-active-bg, #5c8e32);
+  color: var(--theme-tab-active-color, #fff);
 }
 
 /* Stage & Container */
@@ -222,40 +142,37 @@ body {
 }
 
 .game-module-card {
-  background: var(--theme-panel-bg);
-  border: var(--theme-border-width) solid var(--theme-border-color);
-  box-shadow: var(--theme-panel-shadow);
+  background: var(--theme-panel-bg, #c6c6c6);
+  border: var(--theme-border-width, 4px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-panel-shadow, none);
   padding: 14px;
-  border-radius: var(--theme-radius);
+  border-radius: var(--theme-radius, 0px);
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Module 1: Recognition & Sentence Cockpit Box */
+/* Module 1: Recognition & Sentence Box */
 .sentence-container {
-  background: var(--theme-box-bg);
-  border: var(--theme-border-width) solid var(--theme-border-color);
-  box-shadow: var(--theme-box-shadow);
-  padding: 15px;
+  background: var(--theme-box-bg, #e0e0e0);
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  padding: 14px;
   font-size: 1.45rem;
-  font-weight: 700;
-  line-height: 1.65;
-  border-radius: var(--theme-radius-sm);
-  color: var(--theme-text);
+  font-weight: bold;
+  line-height: 1.6;
+  border-radius: var(--theme-radius-sm, 0px);
 }
 
 .target-blank {
-  color: var(--theme-accent);
-  background: rgba(0, 229, 255, 0.12);
-  padding: 2px 10px;
-  border: 2px dashed var(--theme-accent);
-  border-radius: 6px;
+  color: var(--theme-accent, #0b8043);
+  background: #c8e6c9;
+  padding: 2px 8px;
+  border: 2px dashed var(--theme-accent, #0b8043);
+  border-radius: 4px;
   display: inline-block;
-  min-width: 52px;
+  min-width: 48px;
   text-align: center;
-  transition: all 0.15s ease;
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
 .options-grid {
@@ -267,47 +184,44 @@ body {
 .option-btn {
   min-height: 68px;
   font-size: 2rem;
-  font-weight: 800;
-  background: var(--theme-btn-option-bg);
-  color: var(--theme-btn-option-color);
-  border: var(--theme-border-width) solid var(--theme-btn-option-border);
-  box-shadow: var(--theme-btn-shadow);
+  font-weight: bold;
+  background: var(--theme-btn-option-bg, #ffffff);
+  color: var(--theme-btn-option-color, #1e1e1e);
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-btn-shadow, none);
   cursor: pointer;
-  border-radius: var(--theme-radius-sm);
-  transition: transform 0.1s ease, background-color 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+  border-radius: var(--theme-radius-sm, 0px);
+  transition: transform 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
 }
 
 .option-btn:active {
-  transform: translate(1px, 2px);
-  filter: brightness(1.15);
+  transform: translate(2px, 2px);
 }
 
 .option-btn.correct {
-  background: #0a3622 !important;
-  color: #00ff66 !important;
-  border-color: #00ff66 !important;
-  box-shadow: 0 0 16px rgba(0, 255, 102, 0.5) !important;
+  background: #a5d6a7 !important;
+  color: #1b5e20 !important;
+  border-color: #1b5e20 !important;
 }
 
 .option-btn.wrong {
-  background: #3d1218 !important;
-  color: #ff6b85 !important;
-  border-color: #ff2a5f !important;
-  opacity: 0.65;
+  background: #ef9a9a !important;
+  color: #b71c1c !important;
+  opacity: 0.6;
 }
 
 /* Karaoke Highlighting on Option Buttons & Target Blank */
 .option-btn.story-highlight,
 .target-blank.story-highlight {
-  background: #ffd600 !important;
-  color: #0c0e14 !important;
+  background: #ffeb3b !important;
+  color: #b71c1c !important;
   font-weight: 900 !important;
-  border-color: #ffaa00 !important;
-  box-shadow: 0 0 16px rgba(255, 214, 0, 0.85) !important;
-  transform: scale(1.03);
+  border-color: #d35400 !important;
+  box-shadow: 0 0 14px rgba(241, 196, 15, 0.95) !important;
+  transform: scale(1.04);
 }
 
-/* Module 2: Handwriting Tuning Workshop */
+/* Module 2: Handwriting Crafting Table */
 .handwriting-meta {
   display: flex;
   justify-content: space-between;
@@ -315,72 +229,132 @@ body {
 }
 
 .char-info-box {
-  background: var(--theme-box-bg);
-  border: var(--theme-border-width) solid var(--theme-border-color);
-  padding: 6px 16px;
+  background: #ddd;
+  border: 2px solid #000;
+  padding: 4px 14px;
   text-align: center;
-  border-radius: var(--theme-radius-sm);
+  border-radius: var(--theme-radius-sm, 0px);
 }
 
 .char-info-box h2 {
   font-size: 2.3rem;
-  color: var(--theme-accent);
+  color: #1a5fb4;
   line-height: 1.1;
-  text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
 }
 
 .handwriting-canvas-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #11151f;
-  border: 2px solid var(--theme-accent);
-  box-shadow: 0 0 14px rgba(0, 229, 255, 0.2);
+  background: #fff;
+  border: 3px solid #000;
   margin: 6px auto;
-  border-radius: var(--theme-radius-sm);
+  border-radius: 4px;
   overflow: hidden;
   touch-action: none;
 }
 
 /* Module 3: Story & Karaoke Highlighting */
 .story-box {
-  background: var(--theme-box-bg);
-  border: var(--theme-border-width) solid var(--theme-border-color);
+  background: var(--theme-box-bg, #ffffff);
+  color: var(--theme-text, #1e1e1e);
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-panel-shadow, none);
   padding: 14px;
   max-height: 250px;
   overflow-y: auto;
   font-size: 1.25rem;
   line-height: 1.8;
-  border-radius: var(--theme-radius-sm);
-  color: var(--theme-text);
+  border-radius: var(--theme-radius-sm, 0px);
 }
 
 .story-char-span {
   display: inline;
+  color: inherit;
   transition: background-color 0.12s ease, color 0.12s ease;
   border-radius: 3px;
   padding: 1px 2px;
 }
 
-.story-char-span.story-highlight {
-  background: #ffd600 !important;
-  color: #0c0e14 !important;
-  font-weight: 900 !important;
-  box-shadow: 0 0 10px rgba(255, 214, 0, 0.8);
+/* Module 3: QA Question Card & Options */
+.qa-box {
+  background: var(--theme-box-bg, #ffffff);
+  color: var(--theme-text, #1e1e1e);
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000);
+  box-shadow: var(--theme-panel-shadow, none);
+  padding: 14px;
+  border-radius: var(--theme-radius-sm, 0px);
 }
 
-/* AI Socratic Pit Crew Companion Box */
+.qa-question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.qa-question-title {
+  font-weight: 900;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--theme-text, #1e1e1e);
+  flex: 1;
+}
+
+.qa-question-title .story-char-span {
+  color: var(--theme-text, #1e1e1e);
+}
+
+.qa-opt-btn {
+  font-size: 1.2rem !important;
+  min-height: 56px !important;
+  padding: 8px 14px !important;
+  text-align: center;
+  line-height: 1.4;
+  background: var(--theme-btn-option-bg, #ffffff) !important;
+  color: var(--theme-btn-option-color, #1e1e1e) !important;
+  border: var(--theme-border-width, 3px) solid var(--theme-border-color, #000) !important;
+}
+
+.qa-completion-box {
+  text-align: center;
+  padding: 18px 14px;
+  background: #e8f5e9;
+  border: 3px solid #2e7d32;
+  border-radius: var(--theme-radius-sm, 4px);
+  color: #1b5e20;
+}
+.qa-completion-box h3 {
+  font-size: 1.4rem;
+  color: #1b5e20;
+  margin-bottom: 6px;
+}
+.qa-completion-box p {
+  font-size: 1.05rem;
+  color: #2e7d32;
+}
+
+.story-char-span.story-highlight {
+  background: #ffeb3b !important;
+  color: #b71c1c !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 1px #d35400;
+  box-shadow: 0 0 8px rgba(241, 196, 15, 0.9);
+}
+
+/* AI Socratic Companion Box */
 .ai-companion-drawer {
-  background: #121722;
-  border: 2px solid var(--theme-accent);
-  border-radius: 8px;
+  background: #fff8e1;
+  border: 3px solid #f39c12;
+  border-radius: 6px;
   padding: 10px 14px;
   margin-top: 10px;
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: flex-start;
   animation: slideUp 0.25s ease-out;
-  box-shadow: 0 0 16px rgba(0, 229, 255, 0.2);
 }
 
 .ai-companion-avatar {
@@ -394,15 +368,15 @@ body {
 
 .ai-companion-title {
   font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--theme-accent);
-  margin-bottom: 3px;
+  font-weight: bold;
+  color: #d35400;
+  margin-bottom: 2px;
 }
 
 .ai-companion-text {
   font-size: 1rem;
-  color: #e2eafc;
-  line-height: 1.45;
+  color: #333;
+  line-height: 1.4;
 }
 
 @keyframes slideUp {
@@ -417,12 +391,11 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.65);
   display: none;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(3px);
 }
 
 .modal-overlay.active {
@@ -430,26 +403,87 @@ body {
 }
 
 .modal-content {
-  background: var(--theme-panel-bg);
-  border: var(--theme-border-width) solid var(--theme-border-color);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.85);
-  padding: 20px;
+  background: var(--theme-panel-bg, #c6c6c6);
+  border: var(--theme-border-width, 4px) solid #000;
+  box-shadow: var(--theme-panel-shadow, none);
+  padding: 18px;
   max-width: 500px;
   width: 90%;
-  border-radius: var(--theme-radius);
-  color: var(--theme-text);
+  border-radius: var(--theme-radius, 0px);
 }
 
-.modal-content input {
-  background: var(--theme-box-bg);
-  color: var(--theme-text);
-  border: 2px solid var(--theme-border-color);
-  border-radius: 6px;
-  outline: none;
+/* Minecraft Voxel Visual Theme Tokens */
+:root {
+  --theme-name: "minecraft";
+  --theme-bg: #866043; /* Minecraft Dirt */
+  --theme-panel-bg: #c6c6c6; /* Stone panel */
+  --theme-border-color: #000000;
+  --theme-border-width: 3px;
+  --theme-radius: 0px; /* Crisp voxel corners */
+  --theme-radius-sm: 0px;
+
+  --theme-text: #1e1e1e;
+  --theme-accent: #17dd62; /* Minecraft Emerald */
+  --theme-wood: #b88746;
+  --theme-grass: #5c8e32;
+
+  --theme-panel-shadow: inset -4px -4px #555, inset 4px 4px #fff;
+  --theme-box-bg: #e0e0e0;
+
+  --theme-btn-bg: var(--theme-wood);
+  --theme-btn-color: #ffffff;
+  --theme-btn-shadow: inset -3px -3px #8c5e26, inset 3px 3px #d69f58;
+  --theme-btn-primary-bg: var(--theme-grass);
+
+  --theme-btn-option-bg: #ffffff;
+  --theme-btn-option-color: #1e1e1e;
+
+  --theme-badge-bg: #222222;
+  --theme-badge-color: var(--theme-accent);
+
+  --theme-tab-inactive-bg: #888888;
+  --theme-tab-inactive-color: #ffffff;
+  --theme-tab-active-bg: var(--theme-grass);
+  --theme-tab-active-color: #ffffff;
+
+  --theme-font: -apple-system, BlinkMacSystemFont, "PingFang SC", "PingFang HK", "Microsoft YaHei", sans-serif;
 }
-.modal-content input:focus {
-  border-color: var(--theme-accent);
+
+/* Space Explorer Theme Tokens (Example Swappable Skin) */
+:root[data-theme="space"] {
+  --theme-name: "space";
+  --theme-bg: #0b0f19; /* Deep Space */
+  --theme-panel-bg: #151d30; /* Cosmic Panel */
+  --theme-border-color: #3b82f6;
+  --theme-border-width: 2px;
+  --theme-radius: 8px; /* Modern rounded corners */
+  --theme-radius-sm: 6px;
+
+  --theme-text: #e2e8f0;
+  --theme-accent: #38bdf8; /* Cyan star pulse */
+  --theme-wood: #2563eb;
+  --theme-grass: #06b6d4;
+
+  --theme-panel-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(59, 130, 246, 0.2);
+  --theme-box-bg: #1e293b;
+
+  --theme-btn-bg: #1e3a8a;
+  --theme-btn-color: #ffffff;
+  --theme-btn-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+  --theme-btn-primary-bg: #0284c7;
+
+  --theme-btn-option-bg: #1e293b;
+  --theme-btn-option-color: #f0f4fc;
+
+  --theme-badge-bg: #0f172a;
+  --theme-badge-color: #38bdf8;
+
+  --theme-tab-inactive-bg: #334155;
+  --theme-tab-inactive-color: #94a3b8;
+  --theme-tab-active-bg: #2563eb;
+  --theme-tab-active-color: #ffffff;
 }
+
 </style>
   
   
@@ -460,9 +494,9 @@ body {
     <!-- Header HUD -->
     <header class="game-hud">
       <div class="hud-left">
-        <h1 class="hud-title" id="app-title">🏎️ Race Master: 極速賽車</h1>
+        <h1 class="hud-title" id="app-title">中文島 2.0</h1>
         <button class="hud-badge" id="emerald-count" title="點擊調整分數" style="cursor:pointer;">
-          🏆 0
+          💎 0
         </button>
       </div>
       <div class="hud-right">
@@ -475,9 +509,9 @@ body {
 
     <!-- Tab Navigation -->
     <nav class="game-nav">
-      <button class="nav-tab active" data-module="recognition">🏎️ 極速超車</button>
-      <button class="nav-tab" data-module="handwriting">🔧 改裝車間</button>
-      <button class="nav-tab" data-module="reading">🏁 賽道風雲榜</button>
+      <button class="nav-tab active" data-module="recognition">⛏️ 礦洞選字</button>
+      <button class="nav-tab" data-module="handwriting">🔨 合成台練字</button>
+      <button class="nav-tab" data-module="reading">📖 村莊冒險日記</button>
     </nav>
 
     <!-- Main Game Stage -->
@@ -489,10 +523,10 @@ body {
   <!-- Parent Score Adjustment Modal -->
   <div class="modal-overlay" id="parent-modal">
     <div class="modal-content">
-      <h3 style="font-size:1.3rem; margin-bottom:10px;">👑 家長專用：獎盃調整</h3>
-      <p style="font-size:0.95rem; margin-bottom:12px; color:var(--theme-text-muted, #8e9bb5);">您可以手動微調孩子的獎盃獎勵數量：</p>
+      <h3 style="font-size:1.3rem; margin-bottom:10px;">👑 家長專用：綠寶石調整</h3>
+      <p style="font-size:0.95rem; margin-bottom:12px; color:#444;">您可以手動微調孩子的綠寶石獎勵數量：</p>
       <div style="display:flex; gap:8px; align-items:center; margin-bottom:14px;">
-        <label for="input-emerald" style="font-weight:bold;">🏆 獎盃數量：</label>
+        <label for="input-emerald" style="font-weight:bold;">綠寶石數量：</label>
         <input type="number" id="input-emerald" style="padding:6px; font-size:1.1rem; width:100px; border:2px solid #000;">
       </div>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
@@ -509,11 +543,11 @@ body {
       <p id="sync-status-msg" style="font-size:0.95rem; margin-bottom:14px; line-height:1.5;">正在檢查雲端連線...</p>
 
       <div style="margin: 12px 0; text-align: left; background: var(--theme-box-bg, #e0e0e0); padding: 10px; border: 2px solid #000; border-radius: 4px;">
-        <label for="input-webapp-url" style="font-size:0.85rem; font-weight:bold; display:block; margin-bottom:6px; color:var(--theme-text, #f0f4fc);">
+        <label for="input-webapp-url" style="font-size:0.85rem; font-weight:bold; display:block; margin-bottom:6px; color:#222;">
           ⚙️ Google Apps Script Web App 網址：
         </label>
         <input type="url" id="input-webapp-url" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%; padding:8px; font-size:0.82rem; border:2px solid #000; box-sizing:border-box; background:#fff; font-family:monospace;">
-        <p style="font-size:0.75rem; color:var(--theme-text-muted, #8e9bb5); margin-top:4px;">若您部署了新的 Apps Script，可直接在此貼上並儲存。</p>
+        <p style="font-size:0.75rem; color:#666; margin-top:4px;">若您部署了新的 Apps Script，可直接在此貼上並儲存。</p>
       </div>
 
       <div style="display:flex; justify-content:space-between; gap:8px; margin-top:14px;">
@@ -536,6 +570,645 @@ window.DEFAULT_BANKS = {
     "childName": "Milo",
     "grade": "進階 (Milo)",
     "levels": [
+      {
+        "levelId": "milo_lvl_07",
+        "date": "2026-10-11",
+        "theme": "奶奶的溫馨生日午宴",
+        "recognition": [
+          {
+            "sentence": "今天是奶奶的七十大［  ］，全家人齊聚酒樓為她老人家慶祝。",
+            "answer": "壽",
+            "options": [
+              "壽",
+              "春",
+              "濤",
+              "籌"
+            ],
+            "hint": "士部，指長壽、祝壽、壽辰",
+            "socraticHint": "「壽」代表長命百歲、福壽安康，祝賀老人家的生日就是祝壽，不要選成籌劃的「籌」！"
+          },
+          {
+            "sentence": "為了慶祝這個大喜日子，爸爸特地在酒樓預訂了豐盛的生日午［  ］。",
+            "answer": "宴",
+            "options": [
+              "宴",
+              "安",
+              "晏",
+              "案"
+            ],
+            "hint": "宀部，指聚會聚餐、宴席、盛宴",
+            "socraticHint": "「宴」是寶蓋頭，下面有日和女，大家聚在一起享用豐盛的美食就是宴席、午宴！"
+          },
+          {
+            "sentence": "看到孫子們到來，奶奶臉上露出了［  ］祥而溫暖的笑容。",
+            "answer": "慈",
+            "options": [
+              "慈",
+              "磁",
+              "滋",
+              "茲"
+            ],
+            "hint": "心部，指仁愛、慈愛、和藹",
+            "socraticHint": "「慈」底下是心字底，長輩溫柔關愛晚輩的心意就是慈愛與慈祥！"
+          },
+          {
+            "sentence": "桌上擺著寓意吉祥安［  ］的紅桃點心，象徵長命百歲。",
+            "answer": "祥",
+            "options": [
+              "祥",
+              "洋",
+              "詳",
+              "樣"
+            ],
+            "hint": "示部（礻），指吉利、幸福、美好",
+            "socraticHint": "「祥」是示字旁，帶來福氣與吉利的美好預兆就是吉祥、祥和！"
+          },
+          {
+            "sentence": "Milo 恭敬地雙手［  ］著熱騰騰的香茶，遞到奶奶面前。",
+            "answer": "捧",
+            "options": [
+              "捧",
+              "棒",
+              "抱",
+              "持"
+            ],
+            "hint": "手部（扌），指雙手托起物品",
+            "socraticHint": "「捧」是提手旁，兩隻手小心翼翼地托著茶杯就是手捧、捧著，不要選成木字旁的「棒」！"
+          },
+          {
+            "sentence": "Milo 和 Ollie 拿出了親手繪製的生日卡，齊聲向奶奶祝［  ］。",
+            "answer": "賀",
+            "options": [
+              "賀",
+              "架",
+              "貨",
+              "加"
+            ],
+            "hint": "貝部，指慶祝、送禮祝願",
+            "socraticHint": "「賀」上面是加，下面是貝（代表珍貴心意），表達恭喜與祝福就是祝賀、賀卡！"
+          },
+          {
+            "sentence": "作為晚輩，Milo 時刻牢記孝［  ］長輩的中華傳統美德。",
+            "answer": "敬",
+            "options": [
+              "敬",
+              "驚",
+              "警",
+              "苟"
+            ],
+            "hint": "攴部（攵），指尊敬、敬重、孝敬",
+            "socraticHint": "「敬」右邊是反文旁（攵），對長輩恭敬有禮就是孝敬與尊敬！"
+          },
+          {
+            "sentence": "整個酒樓包廂裡洋［  ］著濃濃的親情與歡快的笑聲。",
+            "answer": "溢",
+            "options": [
+              "溢",
+              "益",
+              "滋",
+              "浴"
+            ],
+            "hint": "水部（氵），指充滿而流出、洋溢",
+            "socraticHint": "「溢」是三點水旁，歡樂和喜氣滿滿地散發出來就是熱情洋溢、喜氣洋洋！"
+          }
+        ],
+        "handwriting": [
+          {
+            "char": "壽",
+            "pinyin": "shòu",
+            "strokes": 14,
+            "radical": "士部",
+            "words": [
+              "壽宴",
+              "祝壽",
+              "壽桃",
+              "長壽"
+            ]
+          },
+          {
+            "char": "宴",
+            "pinyin": "yàn",
+            "strokes": 10,
+            "radical": "宀部",
+            "words": [
+              "午宴",
+              "宴會",
+              "盛宴",
+              "宴席"
+            ]
+          },
+          {
+            "char": "慈",
+            "pinyin": "cí",
+            "strokes": 14,
+            "radical": "心部",
+            "words": [
+              "慈祥",
+              "慈愛",
+              "仁慈",
+              "慈善"
+            ]
+          },
+          {
+            "char": "祥",
+            "pinyin": "xiáng",
+            "strokes": 10,
+            "radical": "示部 (礻)",
+            "words": [
+              "吉祥",
+              "慈祥",
+              "祥和",
+              "吉星"
+            ]
+          },
+          {
+            "char": "捧",
+            "pinyin": "pěng",
+            "strokes": 11,
+            "radical": "手部 (扌)",
+            "words": [
+              "手捧",
+              "捧著",
+              "熱捧",
+              "捧場"
+            ]
+          },
+          {
+            "char": "賀",
+            "pinyin": "hè",
+            "strokes": 12,
+            "radical": "貝部",
+            "words": [
+              "祝賀",
+              "賀卡",
+              "恭賀",
+              "道賀"
+            ]
+          },
+          {
+            "char": "敬",
+            "pinyin": "jìng",
+            "strokes": 12,
+            "radical": "攴部 (攵)",
+            "words": [
+              "敬茶",
+              "孝敬",
+              "敬愛",
+              "尊敬"
+            ]
+          },
+          {
+            "char": "溢",
+            "pinyin": "yì",
+            "strokes": 13,
+            "radical": "水部 (氵)",
+            "words": [
+              "洋溢",
+              "充溢",
+              "溢滿",
+              "熱情洋溢"
+            ]
+          }
+        ],
+        "story": {
+          "title": "Milo 的奶奶生日午宴記",
+          "content": "今天是個風和日麗的好日子，也是奶奶的七十大壽。週末中午，Milo 和家人穿戴整齊，興高采烈地來到酒樓參加奶奶的生日午宴。一走進熱鬧的包廂，Milo 就看見奶奶端坐在主位上，銀白色的頭髮梳理得整整齊齊，臉上滿是慈祥溫暖的笑容。桌上擺滿了美味佳餚，還有象徵長壽吉祥的粉紅壽桃。Milo 和弟弟 Ollie 快步走上前，雙手恭敬地捧著一杯香濃的普洱茶遞給奶奶，甜甜地說：「祝奶奶福如東海，壽比南山！」奶奶接過茶，笑得合不攏嘴。接著，Milo 拿出了自己前一天親手精心繪製的彩色立體生日賀卡，卡片上畫著全家人手牽手的溫馨場景。奶奶感動地輕輕撫摸著卡片，連連誇讚 Milo 既懂事又有孝心。整個包廂裡洋溢著歡歌笑語與濃濃的親情，這頓生日午宴成了 Milo 心中最溫暖難忘的回憶！",
+          "questions": [
+            {
+              "question": "今天全家人齊聚酒樓是為了慶祝什麼重要的大喜事？",
+              "answer": "奶奶的七十大壽生日午宴",
+              "options": [
+                "奶奶的七十大壽生日午宴",
+                "學校的運動會頒獎典禮",
+                "新房子的裝修竣工慶典"
+              ]
+            },
+            {
+              "question": "走進酒樓包廂時，坐在主位上的奶奶展現出怎樣的容貌神態？",
+              "answer": "頭髮整齊且滿是慈祥溫暖的笑容",
+              "options": [
+                "頭髮整齊且滿是慈祥溫暖的笑容",
+                "愁眉苦臉且不停地嘆氣",
+                "滿臉嚴肅且生氣地責備大家"
+              ]
+            },
+            {
+              "question": "宴席的餐桌上除了豐盛美味的佳餚，還特別擺放了什麼象徵寓意的點心？",
+              "answer": "象徵長壽吉祥的粉紅壽桃",
+              "options": [
+                "象徵長壽吉祥的粉紅壽桃",
+                "苦澀難嚥的黑巧克力",
+                "快要融化掉的冰淇淋雪糕"
+              ]
+            },
+            {
+              "question": "Milo 和 Ollie 走到奶奶面前時，首先進行了怎樣的禮貌舉動？",
+              "answer": "雙手恭敬地捧著香茶遞給奶奶並送上祝壽語",
+              "options": [
+                "雙手恭敬地捧著香茶遞給奶奶並送上祝壽語",
+                "吵著要立刻吃蛋糕吹蠟燭",
+                "低頭只顧著玩手機遊戲"
+              ]
+            },
+            {
+              "question": "Milo 親手精心準備並送給奶奶的特別禮物是什麼？",
+              "answer": "親手繪製的彩色立體生日賀卡",
+              "options": [
+                "親手繪製的彩色立體生日賀卡",
+                "在商店隨便買的一包糖果",
+                "用過的舊鉛筆和草稿紙"
+              ]
+            },
+            {
+              "question": "賀卡上的畫作描繪了怎樣溫馨的畫面？",
+              "answer": "全家人開心地手牽手在一起",
+              "options": [
+                "全家人開心地手牽手在一起",
+                "一艘在暴風雨中飄搖的木船",
+                "空無一人的寂靜街道"
+              ]
+            },
+            {
+              "question": "奶奶接過熱茶與賀卡後，表現出了怎樣的反應？",
+              "answer": "笑得合不攏嘴並感動地連連誇讚",
+              "options": [
+                "笑得合不攏嘴並感動地連連誇讚",
+                "生氣地把賀卡扔在地上",
+                "什麼話都沒說轉頭就走"
+              ]
+            },
+            {
+              "question": "這場難忘的生日午宴帶給了 Milo 怎樣的心靈感受？",
+              "answer": "體會到濃濃的親情，是心中最溫暖難忘的回憶",
+              "options": [
+                "體會到濃濃的親情，是心中最溫暖難忘的回憶",
+                "覺得非常無聊希望快點結束",
+                "只記住了飯菜很難吃"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "levelId": "milo_lvl_06",
+        "date": "2026-10-11",
+        "theme": "古代文房四寶與書法雅集",
+        "recognition": [
+          {
+            "sentence": "參加書法雅集時，Milo 舉止端莊，十分注重待人接物的禮［  ］。",
+            "answer": "儀",
+            "options": [
+              "儀",
+              "議",
+              "義",
+              "宜"
+            ],
+            "hint": "人部（亻），指禮貌、威儀、儀表",
+            "socraticHint": "「儀」是單人旁，人的風度、禮貌與規範就是禮儀，不要選成議論的「議」！"
+          },
+          {
+            "sentence": "桌案上擺放著研磨細膩的徽州黑［  ］，散發出淡淡的松煙清香。",
+            "answer": "墨",
+            "options": [
+              "墨",
+              "黑",
+              "土",
+              "默"
+            ],
+            "hint": "土部，指書寫畫畫用的黑色顏料",
+            "socraticHint": "「墨」上面是黑，下面是土，寫毛筆字離不開黑黑的墨汁！"
+          },
+          {
+            "sentence": "老師耐心地指導大家如何用石硯細細［  ］磨墨條，手法要均勻平緩。",
+            "answer": "研",
+            "options": [
+              "研",
+              "開",
+              "石",
+              "刑"
+            ],
+            "hint": "石部，指細磨、深入探究",
+            "socraticHint": "「研」是石部，在石頭做成的硯台上磨墨就是研磨！"
+          },
+          {
+            "sentence": "牆壁上懸掛著幾幅風格典［  ］的山水國畫，意境深遠。",
+            "answer": "雅",
+            "options": [
+              "雅",
+              "牙",
+              "佳",
+              "雁"
+            ],
+            "hint": "隹部，指高尚、典雅、優美",
+            "socraticHint": "「雅」形容優美高尚，典雅、優雅都是它！"
+          },
+          {
+            "sentence": "Milo 提起毛筆，凝神靜氣地在宣紙上［  ］毫潑墨，寫下工整有力的大字。",
+            "answer": "揮",
+            "options": [
+              "揮",
+              "軍",
+              "輝",
+              "運"
+            ],
+            "hint": "手部（扌），指揮動、揮灑",
+            "socraticHint": "「揮」是提手旁，拿著毛筆大氣自如地書寫就是揮毫！"
+          }
+        ],
+        "handwriting": [
+          {
+            "char": "儀",
+            "pinyin": "yí",
+            "strokes": 15,
+            "radical": "人部 (亻)",
+            "words": [
+              "禮儀",
+              "儀容",
+              "威儀",
+              "儀式"
+            ]
+          },
+          {
+            "char": "墨",
+            "pinyin": "mò",
+            "strokes": 15,
+            "radical": "土部",
+            "words": [
+              "墨汁",
+              "墨水",
+              "水墨",
+              "筆墨"
+            ]
+          },
+          {
+            "char": "研",
+            "pinyin": "yán",
+            "strokes": 9,
+            "radical": "石部",
+            "words": [
+              "研磨",
+              "研究",
+              "鑽研",
+              "精研"
+            ]
+          },
+          {
+            "char": "雅",
+            "pinyin": "yǎ",
+            "strokes": 12,
+            "radical": "隹部",
+            "words": [
+              "典雅",
+              "雅致",
+              "優雅",
+              "文雅"
+            ]
+          },
+          {
+            "char": "揮",
+            "pinyin": "huī",
+            "strokes": 12,
+            "radical": "手部 (扌)",
+            "words": [
+              "揮毫",
+              "揮手",
+              "揮動",
+              "發揮"
+            ]
+          }
+        ],
+        "story": {
+          "title": "Milo 的文房墨香工坊記",
+          "content": "週末午後，微風吹拂著庭院裡的竹葉，Milo 來到文化中心參加傳統書法藝術工坊。走進古色古香的教室，空氣中飄散著松煙徽墨的淡淡清香。案几上整齊擺放著文房四寶：紫毫筆、端溪硯、手工宣紙和老墨條。指導老師首先向大家示範了坐姿與執筆的禮儀風範，強調寫字時要心靜神凝、儀態大方。接著，Milo 親自挽起衣袖，在石硯中加水細細研磨墨汁。墨汁漸濃，他端正坐好，屏氣凝神，手握毛筆在宣紙上自如揮毫，寫下了剛勁典雅的漢字。看著自己親手寫成的大字，老師讚許地點頭微笑，Milo 心中滿是成就感與喜悅！",
+          "questions": [
+            {
+              "question": "走進古色古香的書法教室時，空氣中飄散著什麼味道？",
+              "answer": "松煙徽墨的淡淡清香",
+              "options": [
+                "松煙徽墨的淡淡清香",
+                "刺鼻嗆人的汽油味",
+                "熱騰騰的飯菜香味"
+              ]
+            },
+            {
+              "question": "書法老師首先向大家示範並強調了什麼重要的學習要求？",
+              "answer": "坐姿、執筆與心靜神凝的禮儀風範",
+              "options": [
+                "坐姿、執筆與心靜神凝的禮儀風範",
+                "大聲喧嘩並四處奔跑",
+                "快速寫完出去踢球"
+              ]
+            },
+            {
+              "question": "在開始寫字前，Milo 在案几前親手進行了什麼準備工作？",
+              "answer": "在石硯中加水細細研磨墨汁",
+              "options": [
+                "在石硯中加水細細研磨墨汁",
+                "拿剪刀把宣紙全部剪碎",
+                "趴在桌上睡午覺"
+              ]
+            },
+            {
+              "question": "Milo 提筆在宣紙上寫下漢字時，展現了怎樣的狀態？",
+              "answer": "屏氣凝神、自如揮毫",
+              "options": [
+                "屏氣凝神、自如揮毫",
+                "手抖得拿不住筆",
+                "隨意塗鴉弄髒衣服"
+              ]
+            },
+            {
+              "question": "獲得老師讚許後，Milo 內心產生了怎樣的感受？",
+              "answer": "滿是成就感與喜悅",
+              "options": [
+                "滿是成就感與喜悅",
+                "感到非常生氣和憤怒",
+                "害怕得哭了起來"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "levelId": "milo_lvl_05",
+        "date": "2026-10-09",
+        "theme": "香港故宮文化博物館探秘",
+        "recognition": [
+          {
+            "sentence": "Milo 滿懷好奇地走進現代化的［  ］物館，準備觀賞珍貴的歷史文物。",
+            "answer": "博",
+            "options": [
+              "博",
+              "搏",
+              "薄",
+              "傳"
+            ],
+            "hint": "十部，指寬廣、豐富、知道得多",
+            "socraticHint": "「博」指廣博、淵博，博物館就是展示大量豐富知識的寶庫！"
+          },
+          {
+            "sentence": "展櫃裡陳列著巧奪天工的青花瓷瓶，件件都是舉世聞名的［  ］寶。",
+            "answer": "珍",
+            "options": [
+              "珍",
+              "真",
+              "貞",
+              "診"
+            ],
+            "hint": "玉部（王部），指珍貴、貴重無比",
+            "socraticHint": "「珍」的左邊是王（玉），珍貴的玉石就是珍寶，不要和真實的「真」搞混！"
+          },
+          {
+            "sentence": "順著明亮的參觀步道漫步，豐富多彩的古代書畫盡收眼［  ］。",
+            "answer": "覽",
+            "options": [
+              "覽",
+              "藍",
+              "籃",
+              "攬"
+            ],
+            "hint": "見部，指觀看、閱覽",
+            "socraticHint": "「覽」的底下是「見」（看見），展覽、遊覽、一覽無餘都是它！"
+          },
+          {
+            "sentence": "古人非常重視待人接物的威［  ］，一舉一動都彰顯著文明修養。",
+            "answer": "儀",
+            "options": [
+              "儀",
+              "義",
+              "議",
+              "宜"
+            ],
+            "hint": "人部（亻），指禮儀、儀容、風度",
+            "socraticHint": "「儀」是單人旁，人的風度、禮貌與規範就是禮儀與威儀！"
+          },
+          {
+            "sentence": "在古代宮廷生活展廳裡，解說員生動地講解著中華傳統的［  ］節與文化。",
+            "answer": "禮",
+            "options": [
+              "禮",
+              "理",
+              "李",
+              "利"
+            ],
+            "hint": "示部（礻），代表禮節與禮貌，注意不要混淆成道理的理",
+            "socraticHint": "「禮」是示字旁，古代用以祭祀與表達敬意的規矩就是禮貌、禮節，不是道理的「理」喔！"
+          }
+        ],
+        "handwriting": [
+          {
+            "char": "博",
+            "pinyin": "bó",
+            "strokes": 12,
+            "radical": "十部",
+            "words": [
+              "博物館",
+              "博學",
+              "博覽",
+              "博士"
+            ]
+          },
+          {
+            "char": "珍",
+            "pinyin": "zhēn",
+            "strokes": 9,
+            "radical": "玉部 (王)",
+            "words": [
+              "珍貴",
+              "珍寶",
+              "珍惜",
+              "珍藏"
+            ]
+          },
+          {
+            "char": "覽",
+            "pinyin": "lǎn",
+            "strokes": 17,
+            "radical": "見部",
+            "words": [
+              "展覽",
+              "博覽",
+              "閱覽",
+              "遊覽"
+            ]
+          },
+          {
+            "char": "儀",
+            "pinyin": "yí",
+            "strokes": 15,
+            "radical": "人部 (亻)",
+            "words": [
+              "禮儀",
+              "儀式",
+              "儀表",
+              "威儀"
+            ]
+          },
+          {
+            "char": "禮",
+            "pinyin": "lǐ",
+            "strokes": 17,
+            "radical": "示部 (礻)",
+            "words": [
+              "禮貌",
+              "禮節",
+              "典禮",
+              "敬禮"
+            ]
+          }
+        ],
+        "story": {
+          "title": "Milo 的故宮文化博物館探秘",
+          "content": "秋日天朗氣清，Milo 帶著學習筆記本，興致勃勃地來到坐落於西九海濱的香港故宮文化博物館。一踏進挑高的金色中庭大廳，莊嚴典雅的氣息撲面而來。Milo 沿著展覽路線細心觀賞，展櫃裡陳列著一件件巧奪天工的古代珍寶與名家書畫。在清代宮廷生活展廳中，互動屏幕生動重現了古人的禮儀典範與文人雅趣，讓 Milo 深刻體會到中華文化的博大精深。在多媒體體驗區，Milo 還親自嘗試了虛擬穿戴古代服飾，在歡樂的探索中收穫滿滿。走出展館時，夕陽映照在維港海面上，Milo 心中滿是對歷史文化的敬仰與自豪！",
+          "questions": [
+            {
+              "question": "Milo 今天帶著什麼工具來到香港故宮文化博物館？",
+              "answer": "學習筆記本",
+              "options": [
+                "學習筆記本",
+                "遊戲機手柄",
+                "游泳圈和泳鏡"
+              ]
+            },
+            {
+              "question": "展櫃裡陳列著什麼樣的展品，吸引了 Milo 的目光？",
+              "answer": "巧奪天工的古代珍寶與名家書畫",
+              "options": [
+                "巧奪天工的古代珍寶與名家書畫",
+                "破舊的玩具模型",
+                "枯黃的落葉碎片"
+              ]
+            },
+            {
+              "question": "清代宮廷生活展廳的互動屏幕生動展現了什麼內容？",
+              "answer": "古人的禮儀典範與文人雅趣",
+              "options": [
+                "古人的禮儀典範與文人雅趣",
+                "激烈的賽車比賽",
+                "現代的航天火箭發射"
+              ]
+            },
+            {
+              "question": "在多媒體體驗區，Milo 親自體驗了什麼有趣的活動？",
+              "answer": "虛擬穿戴古代服飾",
+              "options": [
+                "虛擬穿戴古代服飾",
+                "彈奏電子吉他",
+                "打乒乓球比賽"
+              ]
+            },
+            {
+              "question": "參觀完展覽走出博物館時，Milo 內心產生了怎樣的感受？",
+              "answer": "對歷史文化的敬仰與自豪",
+              "options": [
+                "對歷史文化的敬仰與自豪",
+                "覺得非常疲倦很想睡覺",
+                "感到害怕和沮喪"
+              ]
+            }
+          ]
+        }
+      },
       {
         "levelId": "milo_lvl_04",
         "date": "2026-10-08",
@@ -1268,6 +1941,366 @@ window.DEFAULT_BANKS = {
     "childName": "Ollie",
     "grade": "基礎 (Ollie)",
     "levels": [
+      {
+        "levelId": "ollie_lvl_06",
+        "date": "2026-10-11",
+        "theme": "陽光花園小園丁",
+        "recognition": [
+          {
+            "sentence": "Ollie 拿起小鐵鏟，在花盆裡挖開鬆軟的泥［  ］。",
+            "answer": "土",
+            "options": [
+              "土",
+              "士",
+              "十",
+              "上"
+            ],
+            "hint": "土部，指土壤、泥土",
+            "socraticHint": "「土」指鬆軟的泥土，植物在土裡扎根長大！"
+          },
+          {
+            "sentence": "嫩綠嫩綠的蔬菜小［  ］探出頭來，真可愛。",
+            "answer": "苗",
+            "options": [
+              "苗",
+              "草",
+              "花",
+              "木"
+            ],
+            "hint": "艸部（艹），植物初生的幼芽",
+            "socraticHint": "「苗」上面是草字頭，下面是田，田裡剛發芽的小幼苗！"
+          },
+          {
+            "sentence": "大家坐在寬闊平整的草［  ］上，聞著花香。",
+            "answer": "地",
+            "options": [
+              "地",
+              "也",
+              "池",
+              "他"
+            ],
+            "hint": "土部，地面、大地、草地",
+            "socraticHint": "「地」是土字旁，綠油油的草地、大地都是它！"
+          },
+          {
+            "sentence": "天空灑下細細的小［  ］絲，給小花小草洗了個澡。",
+            "answer": "雨",
+            "options": [
+              "雨",
+              "兩",
+              "雪",
+              "雲"
+            ],
+            "hint": "雨部，天上降落的水滴",
+            "socraticHint": "「雨」像天上落下的四滴小雨珠，下雨天的小水珠！"
+          },
+          {
+            "sentence": "喝飽了甘甜的水，小綠苗天天快快［  ］高。",
+            "answer": "長",
+            "options": [
+              "長",
+              "大",
+              "高",
+              "張"
+            ],
+            "hint": "長部，生長、長大",
+            "socraticHint": "「長」指慢慢長大、長高，植物一天天長高！"
+          }
+        ],
+        "handwriting": [
+          {
+            "char": "土",
+            "pinyin": "tǔ",
+            "strokes": 3,
+            "radical": "土部",
+            "words": [
+              "泥土",
+              "土地",
+              "泥巴",
+              "沙土"
+            ]
+          },
+          {
+            "char": "苗",
+            "pinyin": "miáo",
+            "strokes": 8,
+            "radical": "艸部 (艹)",
+            "words": [
+              "小苗",
+              "禾苗",
+              "樹苗",
+              "幼苗"
+            ]
+          },
+          {
+            "char": "地",
+            "pinyin": "dì",
+            "strokes": 6,
+            "radical": "土部",
+            "words": [
+              "草地",
+              "大地",
+              "田地",
+              "地面"
+            ]
+          },
+          {
+            "char": "雨",
+            "pinyin": "yǔ",
+            "strokes": 8,
+            "radical": "雨部",
+            "words": [
+              "下雨",
+              "小雨",
+              "雨水",
+              "雨天"
+            ]
+          },
+          {
+            "char": "長",
+            "pinyin": "zhǎng",
+            "strokes": 8,
+            "radical": "長部",
+            "words": [
+              "長大",
+              "長高",
+              "生長",
+              "成長"
+            ]
+          }
+        ],
+        "story": {
+          "title": "Ollie 的小園丁日記",
+          "content": "清晨陽光好溫暖，Ollie 戴上可愛的花手套，跟著家人來到花園當一名勤勞的小園丁。花盆裡裝滿了黑黑軟軟的泥土，Ollie 小心翼翼地把一株綠綠的小蔬菜苗種進土裡。大家在平整的草地上忙前忙後，拿起小噴壺給小苗澆水。這時，天空中飄下了涼涼的細小雨絲，像是在給整片花園唱著歡快的歌。喝飽了水的小苗挺直了身子，在微風中輕輕搖晃。Ollie 開心地拍著小手，期待著小苗天天快快長高，今天當小園丁真是太有趣了！",
+          "questions": [
+            {
+              "question": "清晨來到花園時，Ollie 戴上了什麼工具？",
+              "answer": "可愛的花手套",
+              "options": [
+                "可愛的花手套",
+                "厚厚的大羽絨服",
+                "沉重的大鐵盔"
+              ]
+            },
+            {
+              "question": "Ollie 小心翼翼地把什麼種進了黑黑軟軟的泥土裡？",
+              "answer": "綠綠的小蔬菜苗",
+              "options": [
+                "綠綠的小蔬菜苗",
+                "一塊大石頭",
+                "破舊的塑料袋"
+              ]
+            },
+            {
+              "question": "大家在草地上忙前忙後，用什麼給小苗澆水？",
+              "answer": "小噴壺",
+              "options": [
+                "小噴壺",
+                "大海綿",
+                "破木桶"
+              ]
+            },
+            {
+              "question": "天空中飄下了什麼涼涼的東西，像在給花園唱歌？",
+              "answer": "細小的雨絲",
+              "options": [
+                "細小的雨絲",
+                "滾燙的熱水",
+                "漫天的灰塵"
+              ]
+            },
+            {
+              "question": "當完勤勞的小園丁後，Ollie 心裡有什麼期待？",
+              "answer": "期待小苗天天快快長高",
+              "options": [
+                "期待小苗天天快快長高",
+                "希望小苗馬上枯萎",
+                "再也不想給花澆水"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "levelId": "ollie_lvl_05",
+        "date": "2026-10-09",
+        "theme": "快樂海灘尋寶日",
+        "recognition": [
+          {
+            "sentence": "陽光照在金色的海灘上，踩在軟軟的［  ］子上好舒服。",
+            "answer": "沙",
+            "options": [
+              "沙",
+              "泥",
+              "水",
+              "少"
+            ],
+            "hint": "水部（氵），水中淘析出的細沙",
+            "socraticHint": "「沙」字有三點水，海邊軟軟黃黃的就是沙灘、沙子！"
+          },
+          {
+            "sentence": "一朵朵潔白的小海［  ］拍打著岸邊，發出嘩啦啦的笑聲。",
+            "answer": "浪",
+            "options": [
+              "浪",
+              "狼",
+              "良",
+              "娘"
+            ],
+            "hint": "水部（氵），波浪之意",
+            "socraticHint": "「浪」是三點水旁加個「良」，大海湧動起伏的水花就是海浪！"
+          },
+          {
+            "sentence": "退潮之後，Ollie 在濕潤的沙灘上撿到了一枚粉紅色的彩［  ］殼。",
+            "answer": "貝",
+            "options": [
+              "貝",
+              "見",
+              "頁",
+              "且"
+            ],
+            "hint": "象形字，海貝的外形",
+            "socraticHint": "「貝」像美麗的雙扇貝殼，撿貝殼最開心了！"
+          },
+          {
+            "sentence": "Ollie 提著紅色的小水［  ］，把收集到的小貝殼一個個放進去。",
+            "answer": "桶",
+            "options": [
+              "桶",
+              "痛",
+              "甬",
+              "木"
+            ],
+            "hint": "木部，裝液體或物品的圓形器具",
+            "socraticHint": "「桶」是木字旁，用來裝水、裝小沙子的小水桶！"
+          },
+          {
+            "sentence": "大家堆起了一座漂亮的沙城堡，看著城堡開心地拍手大［  ］。",
+            "answer": "笑",
+            "options": [
+              "笑",
+              "哭",
+              "叫",
+              "咲"
+            ],
+            "hint": "竹部，露出開心的笑容",
+            "socraticHint": "「笑」上面是竹字頭，眼睛笑得瞇起來就是開心大笑！"
+          }
+        ],
+        "handwriting": [
+          {
+            "char": "沙",
+            "pinyin": "shā",
+            "strokes": 7,
+            "radical": "水部 (氵)",
+            "words": [
+              "沙灘",
+              "白沙",
+              "泥沙",
+              "沙子"
+            ]
+          },
+          {
+            "char": "浪",
+            "pinyin": "làng",
+            "strokes": 10,
+            "radical": "水部 (氵)",
+            "words": [
+              "海浪",
+              "浪花",
+              "風浪",
+              "大浪"
+            ]
+          },
+          {
+            "char": "貝",
+            "pinyin": "bèi",
+            "strokes": 4,
+            "radical": "貝部",
+            "words": [
+              "貝殼",
+              "寶貝",
+              "扇貝",
+              "分貝"
+            ]
+          },
+          {
+            "char": "桶",
+            "pinyin": "tǒng",
+            "strokes": 11,
+            "radical": "木部",
+            "words": [
+              "水桶",
+              "小桶",
+              "木桶",
+              "提桶"
+            ]
+          },
+          {
+            "char": "笑",
+            "pinyin": "xiào",
+            "strokes": 10,
+            "radical": "竹部",
+            "words": [
+              "笑臉",
+              "大笑",
+              "微笑",
+              "可笑"
+            ]
+          }
+        ],
+        "story": {
+          "title": "Ollie 的海灘尋寶日記",
+          "content": "今天天氣晴朗，海風吹在臉上暖洋洋的。Ollie 穿著沙灘短褲，提著紅色小水桶，和家人一起來到金色的海灘玩耍。退潮後的海灘上有一層薄薄的水光，軟軟的細沙踩上去像絨布一樣舒服。一朵朵潔白的浪花拍打著腳丫，Ollie 歡快地彎下腰，在石縫旁找到了一枚粉紅色的漂亮彩貝殼！他小心翼翼地把貝殼放進小水桶裡，接著又合力在沙灘上堆起了一座有高高圍牆的沙城堡。看著雄偉的城堡，Ollie 露出了甜甜的笑臉，今天在海邊尋寶真是太快樂了！",
+          "questions": [
+            {
+              "question": "今天 Ollie 提著什麼顏色的工具去海灘玩耍？",
+              "answer": "紅色小水桶",
+              "options": [
+                "紅色小水桶",
+                "黑色大皮箱",
+                "綠色雨傘"
+              ]
+            },
+            {
+              "question": "踩在退潮後的沙灘細沙上，有什麼樣的感覺？",
+              "answer": "軟軟的像絨布一樣舒服",
+              "options": [
+                "軟軟的像絨布一樣舒服",
+                "硬邦邦的刺痛雙腳",
+                "像火一樣燙得不敢踩"
+              ]
+            },
+            {
+              "question": "Ollie 彎下腰在石縫旁找到了什麼美麗的寶物？",
+              "answer": "粉紅色的漂亮彩貝殼",
+              "options": [
+                "粉紅色的漂亮彩貝殼",
+                "生鏽的鐵釘",
+                "破舊的碎瓦片"
+              ]
+            },
+            {
+              "question": "找到彩貝殼後，Ollie 和家人一起在沙灘上堆了什麼？",
+              "answer": "有高高圍牆的沙城堡",
+              "options": [
+                "有高高圍牆的沙城堡",
+                "一艘巨大木船",
+                "一列長長的小火車"
+              ]
+            },
+            {
+              "question": "堆好城堡後，Ollie 臉上露出了怎樣的表情？",
+              "answer": "甜甜的笑臉",
+              "options": [
+                "甜甜的笑臉",
+                "難過生氣的哭臉",
+                "害怕驚慌的神情"
+              ]
+            }
+          ]
+        }
+      },
       {
         "levelId": "ollie_lvl_04",
         "date": "2026-10-08",
@@ -2289,20 +3322,11 @@ window.DEFAULT_BANKS = {
       this.playRewardChime();
     }
 
-    // Race Master Web Audio Synthesizer with Master Limiter
+    // Audio Web Audio API synthesizer for instant zero-dependency sound effects
     initAudio() {
       if (!this.audioCtx) {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (AudioContext) {
-          this.audioCtx = new AudioContext();
-          this.limiter = this.audioCtx.createDynamicsCompressor();
-          this.limiter.threshold.setValueAtTime(-10, this.audioCtx.currentTime);
-          this.limiter.knee.setValueAtTime(30, this.audioCtx.currentTime);
-          this.limiter.ratio.setValueAtTime(10, this.audioCtx.currentTime);
-          this.limiter.attack.setValueAtTime(0.002, this.audioCtx.currentTime);
-          this.limiter.release.setValueAtTime(0.2, this.audioCtx.currentTime);
-          this.limiter.connect(this.audioCtx.destination);
-        }
+        if (AudioContext) this.audioCtx = new AudioContext();
       }
       if (this.audioCtx && this.audioCtx.state === 'suspended') {
         this.audioCtx.resume();
@@ -2313,75 +3337,33 @@ window.DEFAULT_BANKS = {
       try {
         this.initAudio();
         if (!this.audioCtx) return;
-        const now = this.audioCtx.currentTime;
         const osc = this.audioCtx.createOscillator();
         const gain = this.audioCtx.createGain();
         osc.type = type;
-        osc.frequency.setValueAtTime(freq, now);
-        gain.gain.setValueAtTime(0.18, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + duration);
         osc.connect(gain);
-        gain.connect(this.limiter || this.audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + duration);
-      } catch (e) {}
+        gain.connect(this.audioCtx.destination);
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + duration);
+      } catch (e) {
+        // Audio playback error handled silently
+      }
     }
 
-    // High-Octane Turbo Nitro Boost Sound
     playSuccessSound() {
-      try {
-        this.initAudio();
-        if (!this.audioCtx) return;
-        const now = this.audioCtx.currentTime;
-        const osc = this.audioCtx.createOscillator();
-        const gain = this.audioCtx.createGain();
-        osc.type = 'sawtooth';
-        // Pitch sweep upward simulating turbo throttle
-        osc.frequency.setValueAtTime(260, now);
-        osc.frequency.exponentialRampToValueAtTime(780, now + 0.22);
-        gain.gain.setValueAtTime(0.18, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
-        osc.connect(gain);
-        gain.connect(this.limiter || this.audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.26);
-
-        // Chime harmony layer
-        setTimeout(() => this.playTone(880, 0.15, 'triangle'), 100);
-      } catch (e) {
-        this.playTone(523.25, 0.15);
-      }
+      this.playTone(523.25, 0.15); // C5
+      setTimeout(() => this.playTone(659.25, 0.2), 120); // E5
     }
 
-    // Grand Prix Victory Checkpoint Chime
     playRewardChime() {
-      this.playTone(523.25, 0.08, 'triangle'); // C5
-      setTimeout(() => this.playTone(659.25, 0.08, 'triangle'), 60); // E5
-      setTimeout(() => this.playTone(783.99, 0.08, 'triangle'), 120); // G5
-      setTimeout(() => this.playTone(1046.50, 0.2, 'sine'), 180); // C6
+      this.playTone(587.33, 0.1); // D5
+      setTimeout(() => this.playTone(880.00, 0.25), 100); // A5
     }
 
-    // Tire Screech / Drift Skid Sound
     playErrorSound() {
-      try {
-        this.initAudio();
-        if (!this.audioCtx) return;
-        const now = this.audioCtx.currentTime;
-        const osc = this.audioCtx.createOscillator();
-        const gain = this.audioCtx.createGain();
-        osc.type = 'sawtooth';
-        // Downward frequency sweep simulating braking drift
-        osc.frequency.setValueAtTime(340, now);
-        osc.frequency.exponentialRampToValueAtTime(140, now + 0.22);
-        gain.gain.setValueAtTime(0.16, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-        osc.connect(gain);
-        gain.connect(this.limiter || this.audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.22);
-      } catch (e) {
-        this.playTone(220, 0.25, 'sawtooth');
-      }
+      this.playTone(220, 0.25, 'sawtooth');
     }
 
     // Speech synthesis wrapper with cancel protection
@@ -2534,15 +3516,15 @@ window.DEFAULT_BANKS = {
     updateHUD() {
       const childBtn = document.getElementById('btn-switch-child');
       if (childBtn) {
-        childBtn.textContent = this.activeChild === 'milo' ? '🏎️ Milo ⇄' : '🏎️ Ollie ⇄';
+        childBtn.textContent = this.activeChild === 'milo' ? '👦 Milo ⇄' : '👦 Ollie ⇄';
       }
       const titleEl = document.getElementById('app-title');
       if (titleEl) {
-        titleEl.textContent = this.activeChild === 'milo' ? '🏎️ Milo 極速賽車' : '🏎️ Ollie 極速賽車';
+        titleEl.textContent = this.activeChild === 'milo' ? 'Milo 中文島' : 'Ollie 中文島';
       }
       const emeraldEl = document.getElementById('emerald-count');
       if (emeraldEl) {
-        emeraldEl.textContent = `🏆 ${this.state.emeralds[this.activeChild] || 0}`;
+        emeraldEl.textContent = `💎 ${this.state.emeralds[this.activeChild] || 0}`;
       }
       const langBtn = document.getElementById('btn-toggle-lang');
       if (langBtn) {
@@ -2558,7 +3540,7 @@ window.DEFAULT_BANKS = {
       const titleEl = drawer.querySelector('.ai-companion-title');
       const textEl = drawer.querySelector('.ai-companion-text');
 
-      titleEl.textContent = `🎧 車隊工程師提點 (${context.char || context.target || '賽道分析'})`;
+      titleEl.textContent = `💡 AI 小幫手的提點 (${context.char || context.target || '字詞啟發'})`;
       textEl.textContent = context.hint || '試著觀察部首的形狀和意思，想一想它和哪個部首有關聯喔！';
 
       drawer.style.display = 'flex';
@@ -2676,9 +3658,9 @@ window.DEFAULT_BANKS = {
       this.container.innerHTML = `
         <div class="game-module-card">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-            <span class="hud-badge" style="font-size:0.95rem;">🏎️ 極速超車 第 ${this.currentIndex + 1} / ${this.questions.length} 圈</span>
+            <span class="hud-badge" style="font-size:0.95rem;">⛏️ 礦洞選字 第 ${this.currentIndex + 1} / ${this.questions.length} 題</span>
             <div style="display:flex; gap:6px; align-items:center;">
-              <span style="font-size:0.85rem; color:var(--theme-text-muted, #8e9bb5);">賽道提示: ${q.hint || '選出正確漢字，啟動氮氣超車！'}</span>
+              <span style="font-size:0.85rem; color:#555;">提示: ${q.hint || '請選出正確的字'}</span>
               <button class="hud-btn" id="btn-read-rec-q" style="font-size:0.85rem; padding:4px 8px;">🔊 朗讀題目與選項</button>
               <button class="hud-btn" id="btn-stop-rec-q" style="font-size:0.85rem; padding:4px 8px; display:none;">⏹️ 停止</button>
             </div>
@@ -2695,9 +3677,9 @@ window.DEFAULT_BANKS = {
           </div>
 
           <div id="ai-companion-drawer" class="ai-companion-drawer" style="display:none;">
-            <div class="ai-companion-avatar">🎧</div>
+            <div class="ai-companion-avatar">🦉</div>
             <div class="ai-companion-body">
-              <div class="ai-companion-title">車隊工程師無線電</div>
+              <div class="ai-companion-title">AI 小幫手提點</div>
               <div class="ai-companion-text"></div>
             </div>
           </div>
@@ -2866,9 +3848,8 @@ window.DEFAULT_BANKS = {
         const blank = document.getElementById('target-blank');
         if (blank) {
           blank.textContent = q.answer;
-          blank.style.background = '#0a3622';
-          blank.style.borderColor = '#00ff66';
-          blank.style.color = '#00ff66';
+          blank.style.background = '#a5d6a7';
+          blank.style.borderColor = '#2e7d32';
         }
 
         // Award emeralds
@@ -2912,9 +3893,8 @@ window.DEFAULT_BANKS = {
           const blank = document.getElementById('target-blank');
           if (blank) {
             blank.textContent = q.answer;
-            blank.style.background = '#3d1218';
-            blank.style.borderColor = '#ff2a5f';
-            blank.style.color = '#ff6b85';
+            blank.style.background = '#ffcdd2';
+            blank.style.borderColor = '#c62828';
           }
 
           this.engine.recordAnswer({
@@ -3024,10 +4004,10 @@ window.DEFAULT_BANKS = {
     renderCompletion() {
       this.container.innerHTML = `
         <div class="game-module-card" style="text-align:center; padding: 24px;">
-          <h2 style="font-size:2rem; margin-bottom:12px;">🏎️ 氮氣超車衝刺完成！成功領跑賽道！</h2>
+          <h2 style="font-size:2rem; margin-bottom:12px;">🎉 礦洞選字完成！</h2>
           <p style="font-size:1.2rem; margin-bottom:16px;">本關卡的選字練習全部完成，綠寶石已存入背包！</p>
           <button class="hud-btn primary" id="btn-next-module" style="font-size:1.2rem; padding:10px 24px;">
-            前往「改裝車間」🔧
+            前往「合成台練字」⛏️
           </button>
         </div>
       `;
@@ -3094,16 +4074,16 @@ window.DEFAULT_BANKS = {
       this.container.innerHTML = `
         <div class="game-module-card">
           <div class="handwriting-meta">
-            <span class="hud-badge" style="font-size:0.95rem;">🔧 改裝車間 第 ${this.currentIndex + 1} / ${this.characters.length} 部位</span>
+            <span class="hud-badge" style="font-size:0.95rem;">🔨 合成台練字 第 ${this.currentIndex + 1} / ${this.characters.length} 字</span>
             <span style="font-size:0.9rem; font-weight:bold; color:${isCapped ? '#7f8c8d' : '#27ae60'};">
-              ${isCapped ? '🏆 已獲 2 次獎勵 (自由練習中)' : `🏆 改裝獎盃: ${earnedCount}/2 次`}
+              ${isCapped ? '💎 已獲 2 次獎勵 (自由練習中)' : `💎 本字獎勵: ${earnedCount}/2 次`}
             </span>
           </div>
 
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
             <div class="char-info-box">
               <h2>${cur.char}</h2>
-              <div style="font-size:0.95rem; font-weight:bold; color:var(--theme-text-muted, #8e9bb5);">${cur.pinyin || ''} (${cur.strokes || '?'} 畫)</div>
+              <div style="font-size:0.95rem; font-weight:bold; color:#555;">${cur.pinyin || ''} (${cur.strokes || '?'} 畫)</div>
             </div>
             <div style="flex:1; margin-left:14px; font-size:1.05rem; line-height:1.5;">
               <div><strong>部首/結構：</strong>${cur.radical || '漢字'}</div>
@@ -3119,7 +4099,7 @@ window.DEFAULT_BANKS = {
             <button class="hud-btn" id="btn-animate-hw">🎬 示範筆順</button>
             <button class="hud-btn" id="btn-reset-hw">🔄 重新描紅</button>
             <button class="hud-btn primary" id="btn-complete-hw">
-              ${isCapped ? '✨ 下一個部位' : '✨ 完成改裝 (+1 🏆)'}
+              ${isCapped ? '✨ 下一個字' : '✨ 完成本字 (+1 💎)'}
             </button>
           </div>
         </div>
@@ -3266,7 +4246,7 @@ window.DEFAULT_BANKS = {
       if (!isCapped) {
         if (this.currentWriter !== null && !this.isQuizCompleted) {
           this.engine.playErrorSound();
-          if (feedback) feedback.textContent = '⚠️ 請先依照筆順完成描寫，再點擊領取冠軍獎盃喔！';
+          if (feedback) feedback.textContent = '⚠️ 請先依照筆順完成描寫，再點擊領取綠寶石喔！';
           return;
         }
         if (this.currentWriter === null && this.offlineStrokeCount < 5) {
@@ -3313,10 +4293,10 @@ window.DEFAULT_BANKS = {
     renderCompletion() {
       this.container.innerHTML = `
         <div class="game-module-card" style="text-align:center; padding: 24px;">
-          <h2 style="font-size:2rem; margin-bottom:12px;">🏁 賽車改裝完畢！引擎調校達到最高馬力！</h2>
-          <p style="font-size:1.2rem; margin-bottom:16px;">各項零件皆已精準調校到位，賽車已達到極限競速狀態！</p>
+          <h2 style="font-size:2rem; margin-bottom:12px;">🎉 合成台練字完成！</h2>
+          <p style="font-size:1.2rem; margin-bottom:16px;">今日的筆順練習已圓滿達成，字體工整又端正！</p>
           <button class="hud-btn primary" id="btn-next-module-reading" style="font-size:1.2rem; padding:10px 24px;">
-            前往「賽道風雲榜」🏁
+            前往「村莊冒險日記」📖
           </button>
         </div>
       `;
@@ -3402,7 +4382,7 @@ window.DEFAULT_BANKS = {
       this.container.innerHTML = `
         <div class="game-module-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="hud-badge" style="font-size:0.95rem;">🏁 ${this.storyData.title || '賽事報告'}</span>
+            <span class="hud-badge" style="font-size:0.95rem;">📖 ${this.storyData.title || '冒險日記'}</span>
             <div style="display:flex; gap:6px;">
               <button class="hud-btn primary" id="btn-read-story">🔊 朗讀故事</button>
               <button class="hud-btn" id="btn-stop-story" style="display:none;">⏹️ 停止</button>
@@ -3515,9 +4495,9 @@ window.DEFAULT_BANKS = {
 
       if (this.currentQIndex >= questions.length) {
         qaContainer.innerHTML = `
-          <div style="text-align:center; padding: 14px; background:#e8f5e9; border:2px solid #4caf50; border-radius:4px;">
+          <div class="qa-completion-box">
             <h3>🌟 閱讀理解測驗全數通過！</h3>
-            <p style="margin-top:4px;">已精熟掌握故事重點與文意脈絡！</p>
+            <p>已精熟掌握故事重點與文意脈絡！</p>
           </div>
         `;
         return;
@@ -3542,9 +4522,9 @@ window.DEFAULT_BANKS = {
       }
 
       qaContainer.innerHTML = `
-        <div style="background:#f0f0f0; border:2px solid #000; padding:10px; border-radius:4px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
-            <div style="font-weight:bold; font-size:1.15rem;">
+        <div class="qa-box" id="qa-question-card">
+          <div class="qa-question-header">
+            <div class="qa-question-title">
               ❓ 問題 ${this.currentQIndex + 1} / ${questions.length}: ${qHtml}
             </div>
             <div style="display:flex; gap:6px;">
@@ -3554,7 +4534,7 @@ window.DEFAULT_BANKS = {
           </div>
           <div class="options-grid">
             ${options.map((opt, oIdx) => `
-              <button class="option-btn qa-opt-btn" id="qa-opt-${oIdx}" data-val="${opt}" style="font-size:1.15rem; min-height:50px;">
+              <button class="option-btn qa-opt-btn" id="qa-opt-${oIdx}" data-val="${opt}">
                 ${opt}
               </button>
             `).join('')}
@@ -3772,17 +4752,6 @@ window.DEFAULT_BANKS = {
       // 1. Initialize Engine
       const engine = new window.GameEngine();
       window.engine = engine;
-  // Global AudioContext unlocker on first touch for iPad WebKit
-  const unlockAudioContext = () => {
-    if (window.engine) window.engine.initAudio();
-    window.removeEventListener('touchstart', unlockAudioContext, true);
-    window.removeEventListener('touchend', unlockAudioContext, true);
-    window.removeEventListener('click', unlockAudioContext, true);
-  };
-  window.addEventListener('touchstart', unlockAudioContext, true);
-  window.addEventListener('touchend', unlockAudioContext, true);
-  window.addEventListener('click', unlockAudioContext, true);
-
 
       // 2. Register Activity Modules
       engine.registerModule('recognition', new window.RecognitionModule());
